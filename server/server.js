@@ -49,7 +49,11 @@ app.post('/api/register', async (req, res) => {
     const { email, password } = req.body;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        res.status(201).send(`User created: ${userCredential.user.uid}`);
+        const userId = userCredential.user.uid;
+        await setDoc(doc(db, "users", userId), {
+            email: email
+        });
+        res.status(201).send(`User created: ${userId}`);
     } catch (error) {
         console.error("Error registering new user: ", error);
         res.status(500).send("Error registering user");
