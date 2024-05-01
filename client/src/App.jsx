@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [registerEmail, setRegisterEmail] = useState('');
+    const [registerPassword, setRegisterPassword] = useState('');
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
     const [message, setMessage] = useState('');
 
     const handleRegister = async () => {
         try {
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+            const response = await axios.post('/api/register', {
+                email: registerEmail,
+                password: registerPassword
             });
-            const result = await response.text();
-            setMessage(result);
+            setMessage(response.data);
         } catch (error) {
             console.error('Failed to register', error);
             setMessage('Failed to register');
@@ -23,13 +24,11 @@ function App() {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+            const response = await axios.post('/api/login', {
+                email: loginEmail,
+                password: loginPassword
             });
-            const result = await response.text();
-            setMessage(result);
+            setMessage(response.data);
         } catch (error) {
             console.error('Failed to login', error);
             setMessage('Failed to login');
@@ -41,14 +40,38 @@ function App() {
             <div className="row">
                 <div className="col-md-6">
                     <h2>Register</h2>
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="form-control" placeholder="Email" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="form-control mt-2" placeholder="Password" />
+                    <input 
+                        type="email" 
+                        value={registerEmail} 
+                        onChange={e => setRegisterEmail(e.target.value)} 
+                        className="form-control" 
+                        placeholder="Email" 
+                    />
+                    <input 
+                        type="password" 
+                        value={registerPassword} 
+                        onChange={e => setRegisterPassword(e.target.value)} 
+                        className="form-control mt-2" 
+                        placeholder="Password" 
+                    />
                     <button onClick={handleRegister} className="btn btn-primary mt-2">Register</button>
                 </div>
                 <div className="col-md-6">
                     <h2>Login</h2>
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="form-control" placeholder="Email" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="form-control mt-2" placeholder="Password" />
+                    <input 
+                        type="email" 
+                        value={loginEmail} 
+                        onChange={e => setLoginEmail(e.target.value)} 
+                        className="form-control" 
+                        placeholder="Email" 
+                    />
+                    <input 
+                        type="password" 
+                        value={loginPassword} 
+                        onChange={e => setLoginPassword(e.target.value)} 
+                        className="form-control mt-2" 
+                        placeholder="Password" 
+                    />
                     <button onClick={handleLogin} className="btn btn-success mt-2">Login</button>
                 </div>
             </div>
