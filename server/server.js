@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const { auth, db } = require('./firebaseConfig');
-const { doc, getDoc, setDoc, collection, getDocs } = require("firebase/firestore");
+const { doc, getDoc, setDoc, collection, getDocs, addDoc } = require("firebase/firestore");
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 
 
@@ -46,9 +46,11 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
     try {
-        const budgetRef = doc(db, "users", userId, "budgets", category);
-        await setDoc(budgetRef, { category, amount });
-        res.status(201).send("Budget created");
+        const budgetRef = await addDoc(collection(db, "users", userId, "budgets"), {
+            category, 
+            amount
+        });
+        res.status(201).send(`Budget created with ID: ${budgetRef.id}`);
     } catch (error) {
         console.error("Error creating budget: ", error);
         res.status(500).send("Error creating budget");
@@ -60,7 +62,10 @@ app.get('/api/budgets/:userId', async (req, res) => {
     try {
         const budgetsRef = collection(db, "users", userId, "budgets");
         const querySnapshot = await getDocs(budgetsRef);
-        const budgets = querySnapshot.docs.map(doc => doc.data());
+        const budgets = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
         res.status(200).json(budgets);
     } catch (error) {
         console.error("Error retrieving budgets: ", error);
@@ -79,6 +84,23 @@ app.post('/api/expenses', async (req, res) => {
         res.status(500).send("Error logging expense");
     }
 });
+
+app.get('/api/expenses/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const expensesRef = collection(db, "users", userId, "expenses");
+        const querySnapshot = await getDocs(expensesRef);
+        const expenses = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        res.status(200).json(expenses);
+    } catch (error) {
+        console.error("Error retrieving expenses: ", error);
+        res.status(500).send("Error retrieving expenses");
+    }
+});
+
 
 
 app.listen(PORT, () => {
