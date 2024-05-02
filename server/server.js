@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const { auth, db } = require('./firebaseConfig');
-const { doc, getDoc, setDoc } = require("firebase/firestore");
+const { doc, getDoc, setDoc, collection, getDocs } = require("firebase/firestore");
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 
 
@@ -15,34 +15,6 @@ const PORT = 5000;
 
 app.get('/api', (req, res) => {
     res.status(200).json({ message: 'Hello World' });
-});
-
-app.post('/api/setdata', async (req, res) => {
-    try {
-        await setDoc(doc(db, "testCollection", "testDoc"), {
-            content: "Hello Firestore!"
-        });
-        res.status(200).send("Data set in Firestore");
-    } catch (error) {
-        console.error("Error setting document: ", error);
-        res.status(500).send("Error setting document");
-    }
-});
-
-app.get('/api/getdata', async (req, res) => {
-    try {
-        const docRef = doc(db, "testCollection", "testDoc");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            res.status(200).json({ data: docSnap.data() });
-        } else {
-            res.status(404).send("No such document!");
-        }
-    } catch (error) {
-        console.error("Error getting document: ", error);
-        res.status(500).send("Error getting document");
-    }
 });
 
 app.post('/api/register', async (req, res) => {
@@ -70,6 +42,44 @@ app.post('/api/login', async (req, res) => {
         res.status(500).send("Error logging in user");
     }
 });
+
+app.post('/api/budgets', async (req, res) => {
+    const { userId, category, amount } = req.body;
+    try {
+        const budgetRef = doc(db, "users", userId, "budgets", category);
+        await setDoc(budgetRef, { category, amount });
+        res.status(201).send("Budget created");
+    } catch (error) {
+        console.error("Error creating budget: ", error);
+        res.status(500).send("Error creating budget");
+    }
+});
+
+app.get('/api/budgets/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const budgetsRef = collection(db, "users", userId, "budgets");
+        const querySnapshot = await getDocs(budgetsRef);
+        const budgets = querySnapshot.docs.map(doc => doc.data());
+        res.status(200).json(budgets);
+    } catch (error) {
+        console.error("Error retrieving budgets: ", error);
+        res.status(500).send("Error retrieving budgets");
+    }
+});
+
+app.post('/api/expenses', async (req, res) => {
+    const { userId, category, amount, date } = req.body;
+    try {
+        const expenseRef = doc(collection(db, "users", userId, "expenses"));
+        await setDoc(expenseRef, { category, amount, date });
+        res.status(201).send("Expense logged");
+    } catch (error) {
+        console.error("Error logging expense: ", error);
+        res.status(500).send("Error logging expense");
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
