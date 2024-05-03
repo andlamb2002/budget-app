@@ -18,12 +18,14 @@ app.get('/api', (req, res) => {
 });
 
 app.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
         await setDoc(doc(db, "users", userId), {
-            email: email
+            firstName,  
+            lastName,   
+            email       
         });
         res.status(201).send(`User created: ${userId}`);
     } catch (error) {
@@ -36,12 +38,24 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        res.status(200).send(`User logged in: ${userCredential.user.uid}`);
+        const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            res.status(200).json({
+                id: userCredential.user.uid,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email
+            });
+        } else {
+            res.status(404).send("User not found");
+        }
     } catch (error) {
         console.error("Error logging in: ", error);
         res.status(500).send("Error logging in user");
     }
 });
+
 
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
