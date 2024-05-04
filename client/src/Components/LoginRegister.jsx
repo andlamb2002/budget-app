@@ -8,11 +8,11 @@ function LoginRegister({ setAlertMessage }) {
     const navigate = useNavigate();
     const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
     const [registerInfo, setRegisterInfo] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
+        firstName: 'test', //Remove these fields later
+        lastName: 'test',
+        email: 'test@gmail.com',
+        password: '123456',
+        confirmPassword: '123456'
     });
 
     const handleLogin = async () => {
