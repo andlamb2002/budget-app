@@ -2,16 +2,26 @@ import React from 'react';
 import { useAuth } from '../Contexts/authContext'; 
 
 function Alert({ propMessage }) {
-    const { message: contextMessage } = useAuth();
+    const { sessionWarningActive, refreshSession, message: contextMessage } = useAuth();
 
-    const message = propMessage && propMessage.text ? propMessage : contextMessage;
+    // Choose which message to display
+    let message = propMessage && propMessage.text ? propMessage : contextMessage;
 
     return (
         <div className="container mt-3" style={{ minHeight: '50px' }}>
-            {message && message.text ? (
-                <div className={`alert alert-${message.type}`}>{message.text}</div>
+            {sessionWarningActive ? (
+                <div className="alert alert-warning">
+                    Your session will expire soon.{" "}
+                    <button onClick={refreshSession} className="btn btn-sm btn-primary">Refresh Session</button>
+                </div>
             ) : (
-                <div style={{ height: '50px' }}></div> 
+                message && message.text && (
+                    <div className={`alert alert-${message.type}`}>{message.text}</div>
+                )
+            )}
+            {/* Preserve space when no message is displayed */}
+            {!sessionWarningActive && (!message || !message.text) && (
+                <div style={{ height: '50px' }}></div>
             )}
         </div>
     );
