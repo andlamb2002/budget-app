@@ -3,7 +3,7 @@ import { useAuth } from '../Contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 
 function LoginRegister() {
-    const { login, register, message } = useAuth(); 
+    const { login, register, message, setMessageWithTimeout } = useAuth(); 
     const navigate = useNavigate();
     const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
     const [registerInfo, setRegisterInfo] = useState({
@@ -23,9 +23,13 @@ function LoginRegister() {
 
     const handleRegister = async () => {
         if (registerInfo.password !== registerInfo.confirmPassword) {
+            setMessageWithTimeout("Passwords do not match", 'error');
             return;
         }
-        await register(registerInfo.firstName, registerInfo.lastName, registerInfo.email, registerInfo.password);
+        const success = await register(registerInfo.firstName, registerInfo.lastName, registerInfo.email, registerInfo.password);
+        if (success) {
+            navigate('/'); 
+        }
     };
 
     return (

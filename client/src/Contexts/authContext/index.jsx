@@ -55,6 +55,7 @@ export function AuthProvider({ children }) {
             if (response.status === 201) {
                 setUser(response.data);
                 setMessageWithTimeout("Registration Successful!", 'success');
+                return true; 
             } else {
                 throw new Error('Registration failed');
             }
@@ -64,6 +65,7 @@ export function AuthProvider({ children }) {
                 ? error.response.data.error
                 : 'Failed to register';
             setMessageWithTimeout(errorMessage, 'error');
+            return false; 
         }
     };
     
