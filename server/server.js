@@ -5,7 +5,6 @@ const { auth, db } = require('./firebaseConfig');
 const { doc, getDoc, setDoc, collection, getDocs, addDoc } = require("firebase/firestore");
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 
-
 const app = express();
 app.use(cors());  
 app.use(compression());
@@ -23,39 +22,46 @@ app.post('/api/register', async (req, res) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
         await setDoc(doc(db, "users", userId), {
-            firstName,  
-            lastName,   
-            email       
+            firstName,
+            lastName,
+            email
         });
-        res.status(201).send(`User created: ${userId}`);
+        res.status(201).send({ message: `User created: ${userId}`, userId: userId });
     } catch (error) {
         console.error("Error registering new user: ", error);
-        res.status(500).send("Error registering user");
+        let errorMsg = "Error registering user";
+        if (error.code && error.message) {
+            errorMsg = `${error.code}: ${error.message}`;
+        }
+        res.status(500).send({ error: errorMsg });
     }
 });
+
 
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            res.status(200).json({
-                id: userCredential.user.uid,
-                firstName: userData.firstName,
-                lastName: userData.lastName,
-                email: userData.email
-            });
-        } else {
-            res.status(404).send("User not found");
+        if (!userDoc.exists()) {
+            throw new Error("User not found in database");
         }
+        const userData = userDoc.data();
+        res.status(200).json({
+            id: userCredential.user.uid,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email
+        });
     } catch (error) {
         console.error("Error logging in: ", error);
-        res.status(500).send("Error logging in user");
+        let errorMsg = "Error logging in";
+        if (error.code && error.message) {
+            errorMsg = `${error.code}: ${error.message}`;
+        }
+        res.status(500).send({ error: errorMsg });
     }
 });
-
 
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
@@ -114,8 +120,6 @@ app.get('/api/expenses/:userId', async (req, res) => {
         res.status(500).send("Error retrieving expenses");
     }
 });
-
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
