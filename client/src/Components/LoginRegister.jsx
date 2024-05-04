@@ -19,20 +19,28 @@ function LoginRegister({ setAlertMessage }) {
         if (success) {
             navigate('/');  
         } else {
-            setAlertMessage({ text: 'Login failed', type: 'danger' });
+            setAlertMessage({ text: 'Incorrect email/password. Please try again.', type: 'danger' });
             setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000); 
         }
     };
 
     const handleRegister = async () => {
+        if (!registerInfo.firstName.trim() || !registerInfo.lastName.trim()) {
+            setAlertMessage({ text: "First name and last name cannot be empty.", type: 'danger' });
+            setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000);
+            return;
+        }
         if (registerInfo.password !== registerInfo.confirmPassword) {
-            setAlertMessage({ text: "Passwords do not match", type: 'danger' });
+            setAlertMessage({ text: "Passwords do not match. Please try again.", type: 'danger' });
             setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000); 
             return;
         }
         const success = await register(registerInfo.firstName, registerInfo.lastName, registerInfo.email, registerInfo.password);
         if (success) {
             navigate('/'); 
+        } else {
+            setAlertMessage({ text: 'Registration failed. Please try again.', type: 'danger' });
+            setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000);
         }
     };
 

@@ -16,8 +16,32 @@ app.get('/api', (req, res) => {
     res.status(200).json({ message: 'Hello World' });
 });
 
+function formatFirebaseError(error) {
+    const code = error.code;
+    const message = error.message;
+    switch (code) {
+        case 'auth/invalid-email':
+            return "The email address is invalid. Please enter a valid email address.";
+        case 'auth/user-not-found':
+            return "No user found with this email address.";
+        case 'auth/wrong-password':
+            return "Incorrect password. Please try again.";
+        case 'auth/email-already-in-use':
+            return "This email is already in use by another account.";
+        case 'auth/weak-password':
+            return "The password is too weak. Please use a stronger password.";
+        case 'auth/missing-password':
+            return "No password was provided. Please enter a password.";
+        default:
+            return `Authentication error: ${message}`;
+    }
+}
+
 app.post('/api/register', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
+    if (!firstName.trim() || !lastName.trim()) {
+        return res.status(400).send({ error: 'First name and last name are required and cannot be empty.' });
+    }
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
@@ -29,19 +53,17 @@ app.post('/api/register', async (req, res) => {
         res.status(201).send({ message: `User created: ${userId}`, userId: userId });
     } catch (error) {
         console.error("Error registering new user: ", error);
-        let errorMsg = "Error registering user";
-        if (error.code && error.message) {
-            errorMsg = `${error.code}: ${error.message}`;
-        }
-        res.status(500).send({ error: errorMsg });
+        res.status(500).send({ error: formatFirebaseError(error) });
     }
 });
-
 
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        if (!userCredential) {
+            throw new Error('Login failed');
+        }
         const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
         if (!userDoc.exists()) {
             throw new Error("User not found in database");
@@ -55,11 +77,7 @@ app.post('/api/login', async (req, res) => {
         });
     } catch (error) {
         console.error("Error logging in: ", error);
-        let errorMsg = "Error logging in";
-        if (error.code && error.message) {
-            errorMsg = `${error.code}: ${error.message}`;
-        }
-        res.status(500).send({ error: errorMsg });
+        res.status(500).send({ error: formatFirebaseError(error) });
     }
 });
 

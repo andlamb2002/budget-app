@@ -6,11 +6,13 @@ function Alert({ propMessage }) {
 
     const message = propMessage && propMessage.text ? propMessage : contextMessage;
 
-    if (!message || !message.text) return null;
-
     return (
         <div className="container mt-3" style={{ minHeight: '50px' }}>
-            <div className={`alert alert-${message.type}`}>{message.text}</div>
+            {message && message.text ? (
+                <div className={`alert alert-${message.type}`}>{message.text}</div>
+            ) : (
+                <div style={{ height: '50px' }}></div> 
+            )}
         </div>
     );
 }
