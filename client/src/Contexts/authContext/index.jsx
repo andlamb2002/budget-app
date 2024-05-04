@@ -7,6 +7,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [justLoggedIn, setJustLoggedIn] = useState(false);
     const [sessionWarningActive, setSessionWarningActive] = useState(false);
     const [message, setMessage] = useState({ text: '', type: 'info' });
     const timeoutRef = useRef(null);
@@ -16,12 +17,13 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         clearTimeout(timeoutRef.current);
         setSessionWarningActive(false);
-        setMessageWithTimeout("Logged out successfully!", 'success');
+        sessionStorage.setItem("loggedOut", "true");
+        setJustLoggedIn(false);
     }, []);
 
     const setSessionTimeout = useCallback(() => {
-        clearTimeout(timeoutRef.current); 
-        expirationRef.current = Date.now() + 60000; 
+        clearTimeout(timeoutRef.current);
+        expirationRef.current = Date.now() + 60000;
 
         const warningTimeout = setTimeout(() => {
             setSessionWarningActive(true);
@@ -29,34 +31,32 @@ export const AuthProvider = ({ children }) => {
                 if (Date.now() >= expirationRef.current) {
                     logout();
                 }
-            }, 20000); 
+            }, 20000);
             timeoutRef.current = logoutTimeout;
-        }, 40000); 
+        }, 40000);
 
         timeoutRef.current = warningTimeout;
     }, [logout]);
 
     const refreshSession = () => {
-        clearTimeout(timeoutRef.current); 
+        clearTimeout(timeoutRef.current);
         setSessionWarningActive(false);
-        setSessionTimeout(); 
+        setJustLoggedIn(false);
+        setSessionTimeout();
     };
 
-    const setMessageWithTimeout = (text, type = 'info', duration = 5000) => {
-        clearTimeout(timeoutRef.current);  // Clear any existing timeout to avoid overlaps
+    const setMessageWithTimeout = useCallback((text, type = 'info') => {
         setMessage({ text, type });
-        timeoutRef.current = setTimeout(() => {
-            setMessage({ text: '', type: 'info' });
-        }, duration);
-    };
+        clearTimeout(timeoutRef.current);
+    }, []);
 
     const login = async (email, password) => {
         try {
             const response = await axios.post('/api/login', { email, password });
             if (response.status === 200) {
                 setUser(response.data);
-                setSessionTimeout(); 
-                setMessageWithTimeout("Login Successful!", 'success');
+                sessionStorage.setItem("loggedIn", "true");
+                setJustLoggedIn(true);
                 return { success: true };
             }
         } catch (error) {
@@ -70,8 +70,9 @@ export const AuthProvider = ({ children }) => {
             const response = await axios.post('/api/register', { firstName, lastName, email, password });
             if (response.status === 201) {
                 setUser(response.data);
-                setSessionTimeout(); 
-                setMessageWithTimeout("Registration Successful!", 'success');
+                setSessionTimeout();
+                sessionStorage.setItem("loggedIn", "true");
+                setJustLoggedIn(true);
                 return { success: true };
             }
         } catch (error) {
@@ -98,7 +99,8 @@ export const AuthProvider = ({ children }) => {
             register, 
             refreshSession,
             sessionWarningActive, 
-            message
+            message,
+            justLoggedIn
         }}>
             {children}
         </AuthContext.Provider>

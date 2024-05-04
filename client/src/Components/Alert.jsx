@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Contexts/authContext'; 
 
 function Alert({ propMessage }) {
     const { sessionWarningActive, refreshSession, message: contextMessage } = useAuth();
+    const [displayMessage, setDisplayMessage] = useState({ text: '', type: 'info' });
 
-    let message = propMessage && propMessage.text ? propMessage : contextMessage;
+    useEffect(() => {
+        const activeMessage = propMessage && propMessage.text ? propMessage : contextMessage;
+        setDisplayMessage(activeMessage);
+
+        if (activeMessage.text && !sessionWarningActive) {
+            const timer = setTimeout(() => {
+                setDisplayMessage({ text: '', type: 'info' });
+            }, 5000); 
+
+            return () => clearTimeout(timer);
+        }
+    }, [propMessage, contextMessage, sessionWarningActive]);
 
     return (
         <div className="container mt-3" style={{ minHeight: '50px' }}>
@@ -14,11 +26,11 @@ function Alert({ propMessage }) {
                     <button onClick={refreshSession} className="btn btn-sm btn-primary">Refresh Session</button>
                 </div>
             ) : (
-                message && message.text && (
-                    <div className={`alert alert-${message.type}`}>{message.text}</div>
+                displayMessage.text && (
+                    <div className={`alert alert-${displayMessage.type}`}>{displayMessage.text}</div>
                 )
             )}
-            {!sessionWarningActive && (!message || !message.text) && (
+            {!sessionWarningActive && !displayMessage.text && (
                 <div style={{ height: '50px' }}></div>
             )}
         </div>

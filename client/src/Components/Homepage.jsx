@@ -1,19 +1,30 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAuth } from '../Contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 
-function Homepage() {
-    const { user, logout } = useAuth();
+function Homepage({ setAlertMessage }) {
+    const { user, logout, justLoggedIn } = useAuth();
     const navigate = useNavigate();
+    const timeoutRef = useRef(null);
 
     useEffect(() => {
+        const setAlertWithTimeout = (message) => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+            setAlertMessage(message);
+        };
+
         if (!user) {
             navigate('/login');
+        } else if (justLoggedIn) {
+            setAlertWithTimeout({ text: "Login successful! Welcome back.", type: 'success' });
         }
-    }, [user, navigate]);
+    }, [user, justLoggedIn, navigate, setAlertMessage]);
 
     const handleLogout = async () => {
         await logout();
+        sessionStorage.removeItem("loggedIn"); 
     };
 
     return (

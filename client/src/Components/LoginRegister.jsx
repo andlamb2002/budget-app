@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../Contexts/authContext'; 
 import { useNavigate } from 'react-router-dom';
 
@@ -8,12 +8,26 @@ function LoginRegister({ setAlertMessage }) {
     const navigate = useNavigate();
     const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
     const [registerInfo, setRegisterInfo] = useState({
-        firstName: 'test', //Remove these fields later
+        firstName: 'test', 
         lastName: 'test',
         email: 'test@gmail.com',
         password: '123456',
         confirmPassword: '123456'
     });
+
+    const setAlertWithTimeout = useCallback((message) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        setAlertMessage(message);
+    }, [setAlertMessage]);
+
+    useEffect(() => {
+        if (sessionStorage.getItem("loggedOut") === "true") {
+            setAlertWithTimeout({ text: "Logged out successfully!", type: 'success' });
+            sessionStorage.removeItem("loggedOut"); 
+        }
+    }, [setAlertWithTimeout]);
 
     const handleLogin = async () => {
         const success = await login(loginInfo.email, loginInfo.password);
@@ -34,22 +48,11 @@ function LoginRegister({ setAlertMessage }) {
             return;
         }
         const result = await register(registerInfo.firstName, registerInfo.lastName, registerInfo.email, registerInfo.password);
-        if (result) {
-            navigate('/')
+        if (result.success) {
+            navigate('/');
         } else {
             setAlertMessage({ text: result.error, type: 'danger' });
         }
-    };
-
-    const setAlertWithTimeout = (message, duration = 5000) => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-        setAlertMessage(message);
-    
-        timeoutRef.current = setTimeout(() => {
-            setAlertMessage({ text: '', type: 'info' });
-        }, duration);
     };
 
     return (
