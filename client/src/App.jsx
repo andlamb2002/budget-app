@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './Contexts/authContext';
 import LoginRegister from './Components/LoginRegister';
@@ -9,16 +9,18 @@ import Alert from './Components/Alert';
 import PrivateRoute from './Components/PrivateRoute';
 
 function App() {
+    const [alertMessage, setAlertMessage] = useState({ text: '', type: 'info' });
+
     return (
         <AuthProvider>
             <BrowserRouter>
                 <Header />
-                <Alert />
+                <Alert propMessage={alertMessage} />  
                 <div className="container mt-3">
                     <Routes>
-                        <Route path="/" element={<PrivateRoute><Homepage /></PrivateRoute>} />
-                        <Route path="/login" element={<LoginRegister />} />
-                        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> 
+                        <Route path="/" element={<PrivateRoute><Homepage setAlertMessage={setAlertMessage} /></PrivateRoute>} />
+                        <Route path="/login" element={<LoginRegister setAlertMessage={setAlertMessage} />} />
+                        <Route path="/dashboard" element={<PrivateRoute><Dashboard setAlertMessage={setAlertMessage} /></PrivateRoute>} /> 
                     </Routes>
                 </div>
             </BrowserRouter>

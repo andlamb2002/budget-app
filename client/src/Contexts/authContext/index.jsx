@@ -9,16 +9,11 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState({ text: '', type: 'info' }); 
 
-    const setMessageWithTimeout = (message, type = 'error') => {
-        if (typeof message === 'object' && message !== null) {
-            const details = message.details || 'An error occurred';
-            setMessage(`${message.error}: ${details}`);
-        } else {
-            setMessage(message);
-        }
-        setTimeout(() => setMessage(''), 5000);
+    const setMessageWithTimeout = (text, type = 'danger') => {
+        setMessage({ text, type });
+        setTimeout(() => setMessage({ text: '', type: 'info' }), 5000); 
     };
 
     const login = async (email, password) => {
@@ -27,6 +22,7 @@ export function AuthProvider({ children }) {
             if (response.status === 200) {
                 setUser(response.data);
                 setMessageWithTimeout("Login Successful!", 'success');
+                return true;
             } else {
                 throw new Error('Login failed');
             }
@@ -35,7 +31,8 @@ export function AuthProvider({ children }) {
             const errorMessage = error.response && error.response.data && error.response.data.error
                 ? error.response.data.error
                 : 'Failed to login';
-            setMessageWithTimeout(errorMessage, 'error');
+            setMessageWithTimeout(errorMessage, 'danger');
+            return false;
         }
     };
 
@@ -43,9 +40,11 @@ export function AuthProvider({ children }) {
         try {
             setUser(null);
             setMessageWithTimeout("Logged out successfully!", 'success');
+            return true;
         } catch (error) {
             console.error("Error in logout:", error.message);
-            setMessageWithTimeout('Failed to logout', 'error');
+            setMessageWithTimeout('Failed to logout', 'danger');
+            return false;
         }
     };
 
@@ -55,7 +54,7 @@ export function AuthProvider({ children }) {
             if (response.status === 201) {
                 setUser(response.data);
                 setMessageWithTimeout("Registration Successful!", 'success');
-                return true; 
+                return true;
             } else {
                 throw new Error('Registration failed');
             }
@@ -64,8 +63,8 @@ export function AuthProvider({ children }) {
             const errorMessage = error.response && error.response.data && error.response.data.error
                 ? error.response.data.error
                 : 'Failed to register';
-            setMessageWithTimeout(errorMessage, 'error');
-            return false; 
+            setMessageWithTimeout(errorMessage, 'danger');
+            return false;
         }
     };
     
