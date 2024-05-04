@@ -32,6 +32,8 @@ function formatFirebaseError(error) {
             return "The password must have at least 6 characters. Please use a stronger password.";
         case 'auth/missing-password':
             return "No password was provided. Please enter a password.";
+        case 'auth/missing-email':
+            return "No email address was provided. Please enter an email address.";
         default:
             return `Authentication error: ${message}`;
     }
