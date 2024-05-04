@@ -87,7 +87,6 @@ function LoginRegister() {
                 />
                 <button onClick={handleRegister} className="btn btn-primary mt-2">Register</button>
             </div>
-            {message && <div className="alert alert-info mt-3">{message}</div>}
         </div>
     );
 }
