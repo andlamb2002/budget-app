@@ -4,7 +4,6 @@ import { useAuth } from '../Contexts/authContext';
 function Alert({ propMessage }) {
     const { sessionWarningActive, refreshSession, message: contextMessage } = useAuth();
 
-    // Choose which message to display
     let message = propMessage && propMessage.text ? propMessage : contextMessage;
 
     return (
@@ -19,7 +18,6 @@ function Alert({ propMessage }) {
                     <div className={`alert alert-${message.type}`}>{message.text}</div>
                 )
             )}
-            {/* Preserve space when no message is displayed */}
             {!sessionWarningActive && (!message || !message.text) && (
                 <div style={{ height: '50px' }}></div>
             )}

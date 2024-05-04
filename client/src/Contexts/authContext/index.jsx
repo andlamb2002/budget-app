@@ -42,13 +42,12 @@ export const AuthProvider = ({ children }) => {
         setSessionTimeout(); 
     };
 
-    const setMessageWithTimeout = (text, type = 'danger', duration = 5000) => {
-        clearTimeout(timeoutRef.current);
+    const setMessageWithTimeout = (text, type = 'info', duration = 5000) => {
+        clearTimeout(timeoutRef.current);  // Clear any existing timeout to avoid overlaps
         setMessage({ text, type });
-        const newTimeout = setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             setMessage({ text: '', type: 'info' });
         }, duration);
-        timeoutRef.current = newTimeout;
     };
 
     const login = async (email, password) => {
@@ -92,7 +91,15 @@ export const AuthProvider = ({ children }) => {
     }, [user, setSessionTimeout]);
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, register, refreshSession, sessionWarningActive, message }}>
+        <AuthContext.Provider value={{
+            user, 
+            login, 
+            logout, 
+            register, 
+            refreshSession,
+            sessionWarningActive, 
+            message
+        }}>
             {children}
         </AuthContext.Provider>
     );
