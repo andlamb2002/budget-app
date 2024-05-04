@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useRef } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -8,14 +8,22 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
+    const timeoutRef = useRef(null);
     const [user, setUser] = useState(null);
     const [message, setMessage] = useState({ text: '', type: 'info' }); 
 
-    const setMessageWithTimeout = (text, type = 'danger') => {
+    const setMessageWithTimeout = (text, type = 'danger', duration = 5000) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+    
         setMessage({ text, type });
-        setTimeout(() => setMessage({ text: '', type: 'info' }), 5000); 
+    
+        timeoutRef.current = setTimeout(() => {
+            setMessage({ text: '', type: 'info' });
+        }, duration);
     };
-
+    
     const login = async (email, password) => {
         try {
             const response = await axios.post('/api/login', { email, password });

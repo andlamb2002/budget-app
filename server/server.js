@@ -29,7 +29,7 @@ function formatFirebaseError(error) {
         case 'auth/email-already-in-use':
             return "This email is already in use by another account.";
         case 'auth/weak-password':
-            return "The password is too weak. Please use a stronger password.";
+            return "The password must have at least 6 characters. Please use a stronger password.";
         case 'auth/missing-password':
             return "No password was provided. Please enter a password.";
         default:
@@ -45,12 +45,13 @@ app.post('/api/register', async (req, res) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
-        await setDoc(doc(db, "users", userId), {
+        const userData = {
             firstName,
             lastName,
             email
-        });
-        res.status(201).send({ message: `User created: ${userId}`, userId: userId });
+        };
+        await setDoc(doc(db, "users", userId), userData);
+        res.status(201).send({ userId: userId, ...userData, message: `User created: ${userId}` });
     } catch (error) {
         console.error("Error registering new user: ", error);
         res.status(500).send({ error: formatFirebaseError(error) });

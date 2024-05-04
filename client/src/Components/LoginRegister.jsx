@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../Contexts/authContext'; 
 import { useNavigate } from 'react-router-dom';
 
 function LoginRegister({ setAlertMessage }) {
     const { login, register } = useAuth(); 
+    const timeoutRef = useRef(null);
     const navigate = useNavigate();
     const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
     const [registerInfo, setRegisterInfo] = useState({
@@ -19,29 +20,36 @@ function LoginRegister({ setAlertMessage }) {
         if (success) {
             navigate('/');  
         } else {
-            setAlertMessage({ text: 'Incorrect email/password. Please try again.', type: 'danger' });
-            setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000); 
+            setAlertWithTimeout({ text: 'Incorrect email/password. Please try again.', type: 'danger' });
         }
     };
 
     const handleRegister = async () => {
         if (!registerInfo.firstName.trim() || !registerInfo.lastName.trim()) {
             setAlertMessage({ text: "First name and last name cannot be empty.", type: 'danger' });
-            setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000);
             return;
         }
         if (registerInfo.password !== registerInfo.confirmPassword) {
             setAlertMessage({ text: "Passwords do not match. Please try again.", type: 'danger' });
-            setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000); 
             return;
         }
-        const success = await register(registerInfo.firstName, registerInfo.lastName, registerInfo.email, registerInfo.password);
-        if (success) {
-            navigate('/'); 
+        const result = await register(registerInfo.firstName, registerInfo.lastName, registerInfo.email, registerInfo.password);
+        if (result) {
+            navigate('/')
         } else {
-            setAlertMessage({ text: 'Registration failed. Please try again.', type: 'danger' });
-            setTimeout(() => setAlertMessage({ text: '', type: 'info' }), 5000);
+            setAlertMessage({ text: result.error, type: 'danger' });
         }
+    };
+
+    const setAlertWithTimeout = (message, duration = 5000) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        setAlertMessage(message);
+    
+        timeoutRef.current = setTimeout(() => {
+            setAlertMessage({ text: '', type: 'info' });
+        }, duration);
     };
 
     return (
