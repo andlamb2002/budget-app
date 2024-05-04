@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useAuth } from '../Contexts/authContext';
+import { useNavigate } from 'react-router-dom';
 
-function Dashboard() {
+function Dashboard({ setAlertMessage }) {
+    const { user, justLoggedIn } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, justLoggedIn, navigate, setAlertMessage]);
+
     return (
         <div>
-            <h2>Dashboard</h2>
-            <p>Welcome to your Dashboard! Here you will be able to view and manage your budgets and expenses.</p>
+            <h1>Dashboard for {user?.firstName} {user?.lastName}.</h1>
         </div>
     );
 }
