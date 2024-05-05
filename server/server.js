@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const { auth, db } = require('./firebaseConfig');
-const { doc, getDoc, setDoc, collection, getDocs, addDoc } = require("firebase/firestore");
+const { doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, writeBatch } = require("firebase/firestore");
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 
 const app = express();
@@ -96,9 +96,11 @@ function formatCategory(category) {
     return formattedCategory;
 }
 
-
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
+    if (!category.trim() || amount == null || amount <= 0) {
+        return res.status(400).json({ error: "Category must not be empty and amount must be greater than zero." });
+    }
     const formattedCategory = formatCategory(category);
 
     try {
@@ -136,13 +138,15 @@ app.get('/api/budgets/:userId', async (req, res) => {
 
 app.put('/api/budgets/:userId/:budgetId', async (req, res) => {
     const { userId, budgetId } = req.params;
-    const { category, amount } = req.body;
-    const formattedCategory = formatCategory(category);
+    const { amount } = req.body;
+    if (amount == null || amount <= 0) {
+        return res.status(400).json({ error: "Amount must be greater than zero." });
+    }
 
     try {
         const budgetRef = doc(db, "users", userId, "budgets", budgetId);
-        await updateDoc(budgetRef, { category: formattedCategory, amount });
-        res.status(200).json({ message: `Budget updated with ID: ${budgetId}`, category: formattedCategory, amount });
+        await updateDoc(budgetRef, { amount });
+        res.status(200).json({ message: `Budget updated successfully with ID: ${budgetId}`, amount });
     } catch (error) {
         console.error("Error updating budget: ", error);
         res.status(500).json({ error: "Error updating budget" });
@@ -151,18 +155,39 @@ app.put('/api/budgets/:userId/:budgetId', async (req, res) => {
 
 app.delete('/api/budgets/:userId/:budgetId', async (req, res) => {
     const { userId, budgetId } = req.params;
+
     try {
         const budgetRef = doc(db, "users", userId, "budgets", budgetId);
-        await deleteDoc(budgetRef);
-        res.status(200).send(`Budget deleted with ID: ${budgetId}`);
+        const budgetDoc = await getDoc(budgetRef);
+        if (!budgetDoc.exists()) {
+            return res.status(404).json({ error: "Budget not found." });
+        }
+        const budgetData = budgetDoc.data();
+        const expensesRef = collection(db, "users", userId, "expenses");
+        const batch = writeBatch(db);
+
+        batch.delete(budgetRef);
+
+        const querySnapshot = await getDocs(expensesRef);
+        querySnapshot.forEach(doc => {
+            if (doc.data().category === budgetData.category) {
+                batch.delete(doc.ref);
+            }
+        });
+
+        await batch.commit();
+        res.status(200).json({ message: `Budget and related expenses deleted successfully with ID: ${budgetId}` });
     } catch (error) {
         console.error("Error deleting budget: ", error);
-        res.status(500).send("Error deleting budget");
+        res.status(500).json({ error: "Error deleting budget" });
     }
 });
 
 app.post('/api/expenses', async (req, res) => {
     const { userId, category, amount, date } = req.body;
+    if (!category.trim() || amount == null || amount <= 0 || !date.trim()) {
+        return res.status(400).json({ error: "Category, amount, and date must not be empty, and amount must be greater than zero." });
+    }
     const formattedCategory = formatCategory(category);
 
     try {
@@ -202,8 +227,11 @@ app.get('/api/expenses/:userId', async (req, res) => {
 app.put('/api/expenses/:userId/:expenseId', async (req, res) => {
     const { userId, expenseId } = req.params;
     const { category, amount, date } = req.body;
+    if (!category.trim() || amount == null || amount <= 0 || !date.trim()) {
+        return res.status(400).json({ error: "Category, amount, and date must not be empty, and amount must be greater than zero." });
+    }
     const formattedCategory = formatCategory(category);
-    
+
     try {
         const expenseRef = doc(db, "users", userId, "expenses", expenseId);
         await updateDoc(expenseRef, { category: formattedCategory, amount, date });
