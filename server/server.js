@@ -185,7 +185,7 @@ app.delete('/api/budgets/:userId/:budgetId', async (req, res) => {
 
 app.post('/api/expenses', async (req, res) => {
     const { userId, category, amount, date } = req.body;
-    if (!category.trim() || amount == null || amount <= 0 || !date.trim()) {
+    if (!category.trim() || amount == null || amount <= 0) {
         return res.status(400).json({ error: "Category, amount, and date must not be empty, and amount must be greater than zero." });
     }
     const formattedCategory = formatCategory(category);
@@ -227,7 +227,7 @@ app.get('/api/expenses/:userId', async (req, res) => {
 app.put('/api/expenses/:userId/:expenseId', async (req, res) => {
     const { userId, expenseId } = req.params;
     const { category, amount, date } = req.body;
-    if (!category.trim() || amount == null || amount <= 0 || !date.trim()) {
+    if (!category.trim() || amount == null || amount <= 0) {
         return res.status(400).json({ error: "Category, amount, and date must not be empty, and amount must be greater than zero." });
     }
     const formattedCategory = formatCategory(category);
