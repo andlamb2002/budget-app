@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [sessionWarningActive, setSessionWarningActive] = useState(false);
     const [message, setMessage] = useState({ text: '', type: 'info' });
     const timeoutRef = useRef(null);
-    const expirationRef = useRef(Date.now() + 6000); //Change back to 60000
+    const expirationRef = useRef(Date.now() + 60000); //Change back to 60000
 
     const logout = useCallback(() => {
         setUser(null);
@@ -24,16 +24,16 @@ export const AuthProvider = ({ children }) => {
 
     const setSessionTimeout = useCallback(() => {
         clearTimeout(timeoutRef.current);
-        expirationRef.current = Date.now() + 6000;
+        expirationRef.current = Date.now() + 60000;
         const warningTimeout = setTimeout(() => {
             setSessionWarningActive(true);
             const logoutTimeout = setTimeout(() => {
                 if (Date.now() >= expirationRef.current) {
                     logout();
                 }
-            }, 2000);
+            }, 20000);
             timeoutRef.current = logoutTimeout;
-        }, 4000);
+        }, 40000);
         timeoutRef.current = warningTimeout;
     }, [logout]);
 
