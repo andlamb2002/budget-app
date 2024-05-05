@@ -114,6 +114,31 @@ app.get('/api/budgets/:userId', async (req, res) => {
     }
 });
 
+app.put('/api/budgets/:userId/:budgetId', async (req, res) => {
+    const { userId, budgetId } = req.params;
+    const { category, amount } = req.body;
+    try {
+        const budgetRef = doc(db, "users", userId, "budgets", budgetId);
+        await updateDoc(budgetRef, { category, amount });
+        res.status(200).send(`Budget updated with ID: ${budgetId}`);
+    } catch (error) {
+        console.error("Error updating budget: ", error);
+        res.status(500).send("Error updating budget");
+    }
+});
+
+app.delete('/api/budgets/:userId/:budgetId', async (req, res) => {
+    const { userId, budgetId } = req.params;
+    try {
+        const budgetRef = doc(db, "users", userId, "budgets", budgetId);
+        await deleteDoc(budgetRef);
+        res.status(200).send(`Budget deleted with ID: ${budgetId}`);
+    } catch (error) {
+        console.error("Error deleting budget: ", error);
+        res.status(500).send("Error deleting budget");
+    }
+});
+
 app.post('/api/expenses', async (req, res) => {
     const { userId, category, amount, date } = req.body;
     try {
@@ -139,6 +164,31 @@ app.get('/api/expenses/:userId', async (req, res) => {
     } catch (error) {
         console.error("Error retrieving expenses: ", error);
         res.status(500).send("Error retrieving expenses");
+    }
+});
+
+app.put('/api/expenses/:userId/:expenseId', async (req, res) => {
+    const { userId, expenseId } = req.params;
+    const { category, amount, date } = req.body;
+    try {
+        const expenseRef = doc(db, "users", userId, "expenses", expenseId);
+        await updateDoc(expenseRef, { category, amount, date });
+        res.status(200).send(`Expense updated with ID: ${expenseId}`);
+    } catch (error) {
+        console.error("Error updating expense: ", error);
+        res.status(500).send("Error updating expense");
+    }
+});
+
+app.delete('/api/expenses/:userId/:expenseId', async (req, res) => {
+    const { userId, expenseId } = req.params;
+    try {
+        const expenseRef = doc(db, "users", userId, "expenses", expenseId);
+        await deleteDoc(expenseRef);
+        res.status(200).send(`Expense deleted with ID: ${expenseId}`);
+    } catch (error) {
+        console.error("Error deleting expense: ", error);
+        res.status(500).send("Error deleting expense");
     }
 });
 
