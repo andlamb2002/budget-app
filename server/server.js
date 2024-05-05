@@ -92,15 +92,22 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
+    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+
     try {
-        const budgetRef = await addDoc(collection(db, "users", userId, "budgets"), {
-            category, 
-            amount
-        });
-        res.status(201).send(`Budget created with ID: ${budgetRef.id}`);
+        const budgetsRef = collection(db, "users", userId, "budgets");
+        const snapshot = await getDocs(budgetsRef);
+        const exists = snapshot.docs.some(doc => doc.data().category === formattedCategory);
+
+        if (exists) {
+            return res.status(400).json({ error: "Budget category already exists." });
+        }
+
+        const budgetRef = await addDoc(budgetsRef, { category: formattedCategory, amount });
+        res.status(201).json({ id: budgetRef.id, category: formattedCategory, amount });
     } catch (error) {
         console.error("Error creating budget: ", error);
-        res.status(500).send("Error creating budget");
+        res.status(500).json({ error: "Error creating budget" });
     }
 });
 
@@ -123,13 +130,15 @@ app.get('/api/budgets/:userId', async (req, res) => {
 app.put('/api/budgets/:userId/:budgetId', async (req, res) => {
     const { userId, budgetId } = req.params;
     const { category, amount } = req.body;
+    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+
     try {
         const budgetRef = doc(db, "users", userId, "budgets", budgetId);
-        await updateDoc(budgetRef, { category, amount });
-        res.status(200).send(`Budget updated with ID: ${budgetId}`);
+        await updateDoc(budgetRef, { category: formattedCategory, amount });
+        res.status(200).json({ message: `Budget updated with ID: ${budgetId}`, category: formattedCategory, amount });
     } catch (error) {
         console.error("Error updating budget: ", error);
-        res.status(500).send("Error updating budget");
+        res.status(500).json({ error: "Error updating budget" });
     }
 });
 
@@ -147,13 +156,23 @@ app.delete('/api/budgets/:userId/:budgetId', async (req, res) => {
 
 app.post('/api/expenses', async (req, res) => {
     const { userId, category, amount, date } = req.body;
+    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+
     try {
-        const expenseRef = doc(collection(db, "users", userId, "expenses"));
-        await setDoc(expenseRef, { category, amount, date });
-        res.status(201).send("Expense logged");
+        const budgetsRef = collection(db, "users", userId, "budgets");
+        const budgetSnapshot = await getDocs(budgetsRef);
+        const categoryExists = budgetSnapshot.docs.some(doc => doc.data().category === formattedCategory);
+
+        if (!categoryExists) {
+            return res.status(400).json({ error: "Expense category does not match any existing budget categories." });
+        }
+
+        const expensesRef = collection(db, "users", userId, "expenses");
+        const expenseRef = await addDoc(expensesRef, { category: formattedCategory, amount, date });
+        res.status(201).json({ id: expenseRef.id, category: formattedCategory, amount, date });
     } catch (error) {
         console.error("Error logging expense: ", error);
-        res.status(500).send("Error logging expense");
+        res.status(500).json({ error: "Error logging expense" });
     }
 });
 
@@ -176,13 +195,15 @@ app.get('/api/expenses/:userId', async (req, res) => {
 app.put('/api/expenses/:userId/:expenseId', async (req, res) => {
     const { userId, expenseId } = req.params;
     const { category, amount, date } = req.body;
+    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+
     try {
         const expenseRef = doc(db, "users", userId, "expenses", expenseId);
-        await updateDoc(expenseRef, { category, amount, date });
-        res.status(200).send(`Expense updated with ID: ${expenseId}`);
+        await updateDoc(expenseRef, { category: formattedCategory, amount, date });
+        res.status(200).json({ message: `Expense updated with ID: ${expenseId}`, category: formattedCategory, amount, date });
     } catch (error) {
         console.error("Error updating expense: ", error);
-        res.status(500).send("Error updating expense");
+        res.status(500).json({ error: "Error updating expense" });
     }
 });
 
