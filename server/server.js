@@ -90,9 +90,16 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+function formatCategory(category) {
+    let formattedCategory = category.trim();
+    formattedCategory = formattedCategory.charAt(0).toUpperCase() + formattedCategory.slice(1).toLowerCase();
+    return formattedCategory;
+}
+
+
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
-    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+    const formattedCategory = formatCategory(category);
 
     try {
         const budgetsRef = collection(db, "users", userId, "budgets");
@@ -130,7 +137,7 @@ app.get('/api/budgets/:userId', async (req, res) => {
 app.put('/api/budgets/:userId/:budgetId', async (req, res) => {
     const { userId, budgetId } = req.params;
     const { category, amount } = req.body;
-    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+    const formattedCategory = formatCategory(category);
 
     try {
         const budgetRef = doc(db, "users", userId, "budgets", budgetId);
@@ -156,7 +163,7 @@ app.delete('/api/budgets/:userId/:budgetId', async (req, res) => {
 
 app.post('/api/expenses', async (req, res) => {
     const { userId, category, amount, date } = req.body;
-    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
+    const formattedCategory = formatCategory(category);
 
     try {
         const budgetsRef = collection(db, "users", userId, "budgets");
@@ -195,8 +202,8 @@ app.get('/api/expenses/:userId', async (req, res) => {
 app.put('/api/expenses/:userId/:expenseId', async (req, res) => {
     const { userId, expenseId } = req.params;
     const { category, amount, date } = req.body;
-    const formattedCategory = category.trim().charAt(0).toUpperCase() + category.toLowerCase().slice(1);
-
+    const formattedCategory = formatCategory(category);
+    
     try {
         const expenseRef = doc(db, "users", userId, "expenses", expenseId);
         await updateDoc(expenseRef, { category: formattedCategory, amount, date });

@@ -24,11 +24,11 @@ function Dashboard({ setAlertMessage }) {
         if (user && user.id) {
             axios.get(`http://localhost:5000/api/budgets/${user.id}`)
                 .then(response => setBudgets(response.data))
-                .catch(error => setAlertMessage({ text: 'Failed to fetch budgets.', type: 'error' }));
+                .catch(error => setAlertMessage({ text: 'Failed to fetch budgets.', type: 'danger' }));
 
             axios.get(`http://localhost:5000/api/expenses/${user.id}`)
                 .then(response => setExpenses(response.data))
-                .catch(error => setAlertMessage({ text: 'Failed to fetch expenses.', type: 'error' }));
+                .catch(error => setAlertMessage({ text: 'Failed to fetch expenses.', type: 'danger' }));
         }
     };
 
@@ -39,7 +39,7 @@ function Dashboard({ setAlertMessage }) {
                     setAlertMessage({ text: 'Budget added successfully!', type: 'success' });
                     fetchBudgetsAndExpenses(); // Refresh the list
                 })
-                .catch(error => setAlertMessage({ text: 'Failed to add budget.', type: 'error' }));
+                .catch(error => setAlertMessage({ text: 'Failed to add budget.', type: 'danger' }));
         }
     };
 
@@ -50,7 +50,7 @@ function Dashboard({ setAlertMessage }) {
                     setAlertMessage({ text: 'Expense added successfully!', type: 'success' });
                     fetchBudgetsAndExpenses(); // Refresh the list
                 })
-                .catch(error => setAlertMessage({ text: 'Failed to add expense.', type: 'error' }));
+                .catch(error => setAlertMessage({ text: 'Failed to add expense.', type: 'danger' }));
         }
     };
 
@@ -78,7 +78,12 @@ function Dashboard({ setAlertMessage }) {
                     ))}
                 </ul>
                 <div>
-                    <input type="text" placeholder="Category" value={newExpense.category} onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })} />
+                    <select value={newExpense.category} onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}>
+                        <option value="">Select a Category</option>
+                        {budgets.map((budget) => (
+                            <option key={budget.id} value={budget.category}>{budget.category}</option>
+                        ))}
+                    </select>
                     <input type="number" placeholder="Amount" value={newExpense.amount} onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })} />
                     <input type="date" value={newExpense.date} onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })} />
                     <button onClick={handleAddExpense}>Add Expense</button>
