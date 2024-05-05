@@ -5,10 +5,15 @@ const { auth, db } = require('./firebaseConfig');
 const { doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, writeBatch } = require("firebase/firestore");
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 
+const corsOptions = {
+    origin: 'http://165.227.178.221', 
+    optionsSuccessStatus: 200 
+};
+
 const app = express();
-app.use(cors());  
-app.use(compression());
+app.use(cors(corsOptions)); 
 app.use(express.json()); 
+
 
 const PORT = 5000;
 
