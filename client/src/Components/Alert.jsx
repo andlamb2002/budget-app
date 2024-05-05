@@ -16,7 +16,7 @@ function Alert({ propMessage }) {
 
             return () => clearTimeout(timer);
         }
-    }, [propMessage, contextMessage, sessionWarningActive]);
+    }, [propMessage, contextMessage]);
 
     return (
         <div className="container mt-3" style={{ minHeight: '50px' }}>

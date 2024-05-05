@@ -8,6 +8,8 @@ function Dashboard({ setAlertMessage }) {
     const navigate = useNavigate();
     const [budgets, setBudgets] = useState([]);
     const [expenses, setExpenses] = useState([]);
+    const [newBudget, setNewBudget] = useState({ category: '', amount: '' });
+    const [newExpense, setNewExpense] = useState({ category: '', amount: '', date: new Date().toISOString().slice(0, 10) });
 
     useEffect(() => {
         if (!user) {
@@ -19,31 +21,36 @@ function Dashboard({ setAlertMessage }) {
     }, [user, navigate, setAlertMessage]);
 
     const fetchBudgetsAndExpenses = () => {
-        if (user) {
-            user.getIdToken(true).then(token => {
-                const headers = {
-                    Authorization: `Bearer ${token}`
-                };
-                // Fetch budgets
-                axios.get(`http://localhost:5000/api/budgets/${user.uid}`, { headers })
-                    .then(response => {
-                        setBudgets(response.data);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching budgets', error);
-                        setAlertMessage({ text: 'Failed to fetch budgets.', type: 'error' });
-                    });
+        if (user && user.id) {
+            axios.get(`http://localhost:5000/api/budgets/${user.id}`)
+                .then(response => setBudgets(response.data))
+                .catch(error => setAlertMessage({ text: 'Failed to fetch budgets.', type: 'error' }));
 
-                // Fetch expenses
-                axios.get(`http://localhost:5000/api/expenses/${user.uid}`, { headers })
-                    .then(response => {
-                        setExpenses(response.data);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching expenses', error);
-                        setAlertMessage({ text: 'Failed to fetch expenses.', type: 'error' });
-                    });
-            });
+            axios.get(`http://localhost:5000/api/expenses/${user.id}`)
+                .then(response => setExpenses(response.data))
+                .catch(error => setAlertMessage({ text: 'Failed to fetch expenses.', type: 'error' }));
+        }
+    };
+
+    const handleAddBudget = () => {
+        if (user && user.id && newBudget.category && newBudget.amount) {
+            axios.post(`http://localhost:5000/api/budgets`, { userId: user.id, ...newBudget })
+                .then(() => {
+                    setAlertMessage({ text: 'Budget added successfully!', type: 'success' });
+                    fetchBudgetsAndExpenses(); // Refresh the list
+                })
+                .catch(error => setAlertMessage({ text: 'Failed to add budget.', type: 'error' }));
+        }
+    };
+
+    const handleAddExpense = () => {
+        if (user && user.id && newExpense.category && newExpense.amount && newExpense.date) {
+            axios.post(`http://localhost:5000/api/expenses`, { userId: user.id, ...newExpense })
+                .then(() => {
+                    setAlertMessage({ text: 'Expense added successfully!', type: 'success' });
+                    fetchBudgetsAndExpenses(); // Refresh the list
+                })
+                .catch(error => setAlertMessage({ text: 'Failed to add expense.', type: 'error' }));
         }
     };
 
@@ -57,6 +64,11 @@ function Dashboard({ setAlertMessage }) {
                         <li key={budget.id}>{budget.category}: ${budget.amount}</li>
                     ))}
                 </ul>
+                <div>
+                    <input type="text" placeholder="Category" value={newBudget.category} onChange={(e) => setNewBudget({ ...newBudget, category: e.target.value })} />
+                    <input type="number" placeholder="Amount" value={newBudget.amount} onChange={(e) => setNewBudget({ ...newBudget, amount: e.target.value })} />
+                    <button onClick={handleAddBudget}>Add Budget</button>
+                </div>
             </div>
             <div>
                 <h2>Expenses</h2>
@@ -65,6 +77,12 @@ function Dashboard({ setAlertMessage }) {
                         <li key={expense.id}>{expense.category} - ${expense.amount} on {new Date(expense.date).toLocaleDateString()}</li>
                     ))}
                 </ul>
+                <div>
+                    <input type="text" placeholder="Category" value={newExpense.category} onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })} />
+                    <input type="number" placeholder="Amount" value={newExpense.amount} onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })} />
+                    <input type="date" value={newExpense.date} onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })} />
+                    <button onClick={handleAddExpense}>Add Expense</button>
+                </div>
             </div>
         </div>
     );
