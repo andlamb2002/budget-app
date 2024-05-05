@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 
 function Dashboard({ setAlertMessage }) {
     const { user, refreshSession } = useAuth();
@@ -22,11 +23,11 @@ function Dashboard({ setAlertMessage }) {
 
     const fetchBudgetsAndExpenses = () => {
         if (user && user.id) {
-            axios.get(`http://localhost:5000/api/budgets/${user.id}`)
+            axios.get(`${API_URL}/api/budgets/${user.id}`)
                 .then(response => setBudgets(response.data))
                 .catch(error => setAlertMessage({ text: 'Failed to fetch budgets.', type: 'danger' }));
 
-            axios.get(`http://localhost:5000/api/expenses/${user.id}`)
+            axios.get(`${API_URL}/api/expenses/${user.id}`)
                 .then(response => setExpenses(response.data))
                 .catch(error => setAlertMessage({ text: 'Failed to fetch expenses.', type: 'danger' }));
         }
@@ -44,22 +45,22 @@ function Dashboard({ setAlertMessage }) {
 
     const handleEditBudget = (budget) => {
         setNewBudget(budget);
-        refreshSession();  // Refresh the session when editing a budget
+        refreshSession();  
     };
 
     const handleEditExpense = (expense) => {
         setNewExpense(expense);
-        refreshSession();  // Refresh the session when editing an expense
+        refreshSession(); 
     };
 
     const handleAddOrUpdateBudget = () => {
         let url, method, data;
         if (newBudget.id) {
-            url = `http://localhost:5000/api/budgets/${user.id}/${newBudget.id}`;
+            url = `${API_URL}/api/budgets/${user.id}/${newBudget.id}`;
             method = 'put';
             data = { amount: newBudget.amount };
         } else {
-            url = `http://localhost:5000/api/budgets`;
+            url = `${API_URL}/api/budgets`;
             method = 'post';
             data = { userId: user.id, category: newBudget.category, amount: newBudget.amount };
         }
@@ -86,7 +87,7 @@ function Dashboard({ setAlertMessage }) {
             setBudgets(newBudgets);
             refreshSession();
 
-            axios.delete(`http://localhost:5000/api/budgets/${user.id}/${id}`)
+            axios.delete(`${API_URL}/api/budgets/${user.id}/${id}`)
                 .then(() => {
                     fetchBudgetsAndExpenses();
                     setAlertMessage({ text: 'Budget deleted successfully!', type: 'success' });
@@ -99,7 +100,7 @@ function Dashboard({ setAlertMessage }) {
     };
 
     const handleAddOrUpdateExpense = () => {
-        const url = newExpense.id ? `http://localhost:5000/api/expenses/${user.id}/${newExpense.id}` : `http://localhost:5000/api/expenses`;
+        const url = newExpense.id ? `${API_URL}/api/expenses/${user.id}/${newExpense.id}` : `${API_URL}/api/expenses`;
         const method = newExpense.id ? 'put' : 'post';
         refreshSession();
         axios[method](url, { userId: user.id, category: newExpense.category, amount: newExpense.amount, date: newExpense.date })
@@ -117,7 +118,7 @@ function Dashboard({ setAlertMessage }) {
             setExpenses(newExpenses);
             refreshSession();
 
-            axios.delete(`http://localhost:5000/api/expenses/${user.id}/${id}`)
+            axios.delete(`${API_URL}/api/expenses/${user.id}/${id}`)
                 .then(() => {
                     setAlertMessage({ text: 'Expense deleted successfully!', type: 'success' });
                 })

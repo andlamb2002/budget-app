@@ -6,16 +6,17 @@ const { doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, 
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 
 const corsOptions = {
-    origin: 'http://165.227.178.221', 
-    optionsSuccessStatus: 200 
+    origin: ['http://165.227.178.221', 'http://localhost:3000'], // Add your client's production URL and localhost
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 const app = express();
-app.use(cors(corsOptions)); 
+app.use(cors(corsOptions));
+app.use(compression());
 app.use(express.json()); 
 
-
-const PORT = 5000;
+// const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.get('/api', (req, res) => {
     res.status(200).json({ message: 'Hello World' });
