@@ -53,7 +53,13 @@ app.post('/api/register', async (req, res) => {
             email
         };
         await setDoc(doc(db, "users", userId), userData);
-        res.status(201).send({ userId: userId, ...userData, message: `User created: ${userId}` });
+
+        res.status(201).json({
+            id: userId, 
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email
+        });
     } catch (error) {
         console.error("Error registering new user: ", error);
         res.status(500).send({ error: formatFirebaseError(error) });
