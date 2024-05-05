@@ -3,7 +3,7 @@ import { useAuth } from '../Contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 
 function Homepage({ setAlertMessage }) {
-    const { user, logout, justLoggedIn } = useAuth();
+    const { user, justLoggedIn, refreshSession } = useAuth();
     const navigate = useNavigate();
     const timeoutRef = useRef(null);
 
@@ -17,20 +17,17 @@ function Homepage({ setAlertMessage }) {
 
         if (!user) {
             navigate('/login');
-        } else if (justLoggedIn) {
-            setAlertWithTimeout({ text: "Login successful! Welcome back.", type: 'success' });
+        } else {
+            if (justLoggedIn) {
+                setAlertWithTimeout({ text: "Login successful!", type: 'success' });
+            }
+            refreshSession(); 
         }
     }, [user, justLoggedIn, navigate, setAlertMessage]);
-
-    const handleLogout = async () => {
-        await logout();
-        sessionStorage.removeItem("loggedIn"); 
-    };
 
     return (
         <div>
             <h1>Welcome, {user?.firstName} {user?.lastName}!</h1>
-            <button onClick={handleLogout} className="btn btn-danger">Logout</button>
         </div>
     );
 }

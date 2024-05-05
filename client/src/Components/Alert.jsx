@@ -12,7 +12,7 @@ function Alert({ propMessage }) {
         if (activeMessage.text && !sessionWarningActive) {
             const timer = setTimeout(() => {
                 setDisplayMessage({ text: '', type: 'info' });
-            }, 5000); 
+            }, 3000); 
 
             return () => clearTimeout(timer);
         }

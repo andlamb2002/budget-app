@@ -3,18 +3,20 @@ import { useAuth } from '../Contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 
 function Dashboard({ setAlertMessage }) {
-    const { user, justLoggedIn } = useAuth();
+    const { user, refreshSession } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) {
             navigate('/login');
+        } else {
+            refreshSession(); 
         }
-    }, [user, justLoggedIn, navigate, setAlertMessage]);
+    }, [user, navigate, setAlertMessage]);
 
     return (
         <div>
-            <h1>Dashboard for {user?.firstName} {user?.lastName}.</h1>
+            <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
         </div>
     );
 }

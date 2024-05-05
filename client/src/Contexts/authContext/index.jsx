@@ -6,15 +6,16 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
     const [justLoggedIn, setJustLoggedIn] = useState(false);
     const [sessionWarningActive, setSessionWarningActive] = useState(false);
     const [message, setMessage] = useState({ text: '', type: 'info' });
     const timeoutRef = useRef(null);
-    const expirationRef = useRef(Date.now() + 60000); 
+    const expirationRef = useRef(Date.now() + 6000); //Change back to 60000
 
     const logout = useCallback(() => {
         setUser(null);
+        localStorage.removeItem('user');
         clearTimeout(timeoutRef.current);
         setSessionWarningActive(false);
         sessionStorage.setItem("loggedOut", "true");
@@ -23,25 +24,23 @@ export const AuthProvider = ({ children }) => {
 
     const setSessionTimeout = useCallback(() => {
         clearTimeout(timeoutRef.current);
-        expirationRef.current = Date.now() + 60000;
-
+        expirationRef.current = Date.now() + 6000;
         const warningTimeout = setTimeout(() => {
             setSessionWarningActive(true);
             const logoutTimeout = setTimeout(() => {
                 if (Date.now() >= expirationRef.current) {
                     logout();
                 }
-            }, 20000);
+            }, 2000);
             timeoutRef.current = logoutTimeout;
-        }, 40000);
-
+        }, 4000);
         timeoutRef.current = warningTimeout;
     }, [logout]);
 
     const refreshSession = () => {
+        setJustLoggedIn(false);
         clearTimeout(timeoutRef.current);
         setSessionWarningActive(false);
-        setJustLoggedIn(false);
         setSessionTimeout();
     };
 
@@ -55,8 +54,9 @@ export const AuthProvider = ({ children }) => {
             const response = await axios.post('/api/login', { email, password });
             if (response.status === 200) {
                 setUser(response.data);
-                sessionStorage.setItem("loggedIn", "true");
+                localStorage.setItem('user', JSON.stringify(response.data));
                 setJustLoggedIn(true);
+                setSessionTimeout();
                 return { success: true };
             }
         } catch (error) {
@@ -70,9 +70,9 @@ export const AuthProvider = ({ children }) => {
             const response = await axios.post('/api/register', { firstName, lastName, email, password });
             if (response.status === 201) {
                 setUser(response.data);
-                setSessionTimeout();
-                sessionStorage.setItem("loggedIn", "true");
+                localStorage.setItem('user', JSON.stringify(response.data));
                 setJustLoggedIn(true);
+                setSessionTimeout();
                 return { success: true };
             }
         } catch (error) {

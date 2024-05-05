@@ -30,8 +30,8 @@ function LoginRegister({ setAlertMessage }) {
     }, [setAlertWithTimeout]);
 
     const handleLogin = async () => {
-        const success = await login(loginInfo.email, loginInfo.password);
-        if (success) {
+        const result = await login(loginInfo.email, loginInfo.password);
+        if (result.success) {
             navigate('/');  
         } else {
             setAlertWithTimeout({ text: 'Incorrect email/password. Please try again.', type: 'danger' });
