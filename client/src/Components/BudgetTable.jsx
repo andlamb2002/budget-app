@@ -60,7 +60,6 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
     };
 
     const handleUpdateAmount = (budgetId) => {
-        refreshSession();
         if (editAmount !== '') {
             const data = {
                 userId: user.id,
@@ -69,12 +68,14 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
             axios.put(`${API_URL}/api/budgets/${user.id}/${budgetId}`, data)
                 .then(() => {
                     setAlertMessage({ text: 'Budget updated successfully!', type: 'success' });
+                    stopEdit();
                     fetchBudgetsAndExpenses();
                 })
                 .catch(error => {
                     setAlertMessage({ text: 'Failed to update budget.', type: 'danger' });
                 });
-            stopEdit();
+        } else {
+            stopEdit(); // Ensure edit mode is exited if no changes
         }
     };
 
@@ -119,31 +120,41 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
                     </tr>
                 </thead>
                 <tbody>
-                    {budgets.map(budget => (
-                        <tr key={budget.id}>
-                            <td className="col-3">{budget.category}</td>
-                            <td className="col-3">
-                                {editingBudgetId === budget.id ? (
-                                    <input
-                                        type="number"
-                                        value={editAmount}
-                                        onChange={handleAmountChange}
-                                        onBlur={() => handleUpdateAmount(budget.id)}
-                                        autoFocus
-                                        className="form-control"
-                                    />
-                                ) : (
-                                    <span onClick={() => startEdit(budget)}>
-                                        ${parseFloat(budget.amount)}
-                                    </span>
-                                )}
-                            </td>
-                            <td className="col-3">${calculateTotalExpenses(budget.category)}</td>
-                            <td className="col-3">
+                {budgets.map(budget => (
+                    <tr key={budget.id}>
+                        <td className="col-3">{budget.category}</td>
+                        <td className="col-3">
+                            {editingBudgetId === budget.id ? (
+                                <input
+                                    type="number"
+                                    value={parseFloat(editAmount)}
+                                    onChange={handleAmountChange}
+                                    className="form-control"
+                                    autoFocus
+                                />
+                            ) : (
+                                <span onClick={() => startEdit(budget)}>
+                                    ${parseFloat(budget.amount).toFixed(2)}
+                                </span>
+                            )}
+                        </td>
+                        <td className="col-3">${calculateTotalExpenses(budget.category)}</td>
+                        <td className="col-3">
+                            {editingBudgetId === budget.id ? (
+                                <div>
+                                    <div className="mb-2">
+                                        <button onClick={() => handleUpdateAmount(budget.id)} className="btn btn-success">Save</button>
+                                    </div>
+                                    <div>
+                                        <button onClick={stopEdit} className="btn btn-danger">Cancel</button>
+                                    </div>
+                                </div>
+                            ) : (
                                 <button onClick={() => handleDeleteBudget(budget.id)} className="btn btn-danger">Delete</button>
-                            </td>
-                        </tr>
-                    ))}
+                            )}
+                        </td>
+                    </tr>
+                ))}
                 </tbody>
                 <tfoot>
                     <tr>
