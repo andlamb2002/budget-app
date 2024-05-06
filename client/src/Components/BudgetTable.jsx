@@ -103,7 +103,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
             .reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
     };
 
-    const totalExpenses = budgets.reduce((acc, budget) => acc + calculateTotalExpenses(budget.category), 0);
+    const totalExpenses = budgets.reduce((acc, budget) => acc + calculateTotalExpenses(budget.category), 0).toFixed(2);
 
     return (
         <div>
