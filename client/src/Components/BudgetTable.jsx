@@ -155,9 +155,9 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
             </table>
             {showAddBudget ? (
                 <div>
-                    <input type="text" name="category" placeholder="Category" value={newBudget.category} onChange={handleInputChange} />
-                    <input type="number" name="amount" placeholder="Budget" value={parseFloat(newBudget.amount)} onChange={handleInputChange} />
-                    <button onClick={handleAddBudget} className="btn btn-success">Add</button>
+                    <input type="text" name="category" placeholder="Category" value={newBudget.category} onChange={handleInputChange} class="me-2" />
+                    <input type="number" name="amount" placeholder="Budget" value={parseFloat(newBudget.amount)} onChange={handleInputChange} class="me-2" />
+                    <button onClick={handleAddBudget} className="btn btn-success me-2">Add</button>
                     <button onClick={toggleAddBudget} className="btn btn-danger">Cancel</button>
                 </div>
             ) : (
