@@ -60,7 +60,7 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
         const url = `${API_URL}/api/expenses/${user.id}/${editExpense.id}`;
         const updatedExpense = {
             ...editExpense,
-            amount: parseFloat(editExpense.amount).toFixed(2)  // Ensure this is a number only when saving
+            amount: parseFloat(editExpense.amount).toFixed(2)  
         };
         axios.put(url, { userId: user.id, ...updatedExpense })
             .then(() => {
