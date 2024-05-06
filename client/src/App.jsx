@@ -14,9 +14,12 @@ function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Header />
-                <Alert propMessage={alertMessage} />  
-                <div className="container mt-3">
+                <div className="fixed-top">
+                    <Header />
+                    <Alert propMessage={alertMessage} />  
+                </div>
+                <div className="container">
+                    <div style={{ height: '200px', visibility: 'hidden' }}></div>
                     <Routes>
                         <Route path="/" element={<PrivateRoute><Homepage setAlertMessage={setAlertMessage} /></PrivateRoute>} />
                         <Route path="/login" element={<LoginRegister setAlertMessage={setAlertMessage} />} />

@@ -1,8 +1,6 @@
 import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Contexts/authContext';
-import logo from '../Assets/logo.png'; 
-import { Navbar } from 'react-bootstrap'; // Import the Navbar component from react-bootstrap
 
 function Header() {
     const { pathname } = useLocation();
@@ -28,18 +26,20 @@ function Header() {
     };
 
     return (
-        <Navbar bg="success" variant="dark" className="text-white"> {/* Use Navbar component with Bootstrap styling */}
-            <Navbar.Brand as={Link} to="/"> {/* Use Navbar.Brand to render a Link */}
-                <img src={logo} alt="Logo" height="100" style={{ marginRight: '32px' }} /> {/* Increase margin from mr-2 to mr-4 */}
-                {getPageTitle()}
-            </Navbar.Brand>
-            {user && (
-                <div className="ml-auto">
-                    <Link to="/dashboard" className="btn btn-primary mx-2">Dashboard</Link>
-                    <button onClick={handleLogout} className="btn btn-danger">Logout</button>
+        <header className="container-fluid bg-success py-4"> 
+            <div className="container">
+                <div className="d-flex justify-content-between align-items-center">
+                    <h1>{getPageTitle()}</h1>
+                    {user && (
+                        <div>
+                            <Link to="/" className="btn btn-primary m-2">Home</Link>
+                            <Link to="/dashboard" className="btn btn-primary m-2">Dashboard</Link>
+                            <button onClick={handleLogout} className="btn btn-danger m-2">Logout</button>
+                        </div>
+                    )}
                 </div>
-            )}
-        </Navbar>
+            </div>
+        </header>
     );
 }
 
