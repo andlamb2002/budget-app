@@ -160,16 +160,20 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                 <div>
                     {showAddExpense ? (
                         <div>
-                            <select name="category" value={newExpense.category} onChange={(e) => handleInputChange(e, 'category')} className="me-2">
-                                <option value="">Category</option>
-                                {budgets.map(budget => (
-                                    <option key={budget.id} value={budget.category}>{budget.category}</option>
-                                ))}
-                            </select>
-                            <input type="number" name="amount" placeholder="Amount" value={newExpense.amount} onChange={(e) => handleInputChange(e, 'amount')} className="me-2" />
-                            <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="me-2" />
-                            <button onClick={handleAddExpense} className="btn btn-success me-2">Add Expense</button>
-                            <button onClick={toggleAddExpense} className="btn btn-danger">Cancel</button>
+                            <div>
+                                <select name="category" value={newExpense.category} onChange={(e) => handleInputChange(e, 'category')} className="me-2">
+                                    <option value="">Category</option>
+                                    {budgets.map(budget => (
+                                        <option key={budget.id} value={budget.category}>{budget.category}</option>
+                                    ))}
+                                </select>
+                                <input type="number" name="amount" placeholder="Amount" value={newExpense.amount} onChange={(e) => handleInputChange(e, 'amount')} className="me-2" />
+                                <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="me-2" />
+                            </div>
+                            <div className="my-2">
+                                <button onClick={handleAddExpense} className="btn btn-success me-2">Add Expense</button>
+                                <button onClick={toggleAddExpense} className="btn btn-danger">Cancel</button>
+                            </div>
                         </div>
                     ) : (
                         <button onClick={toggleAddExpense} className="btn btn-success">+ Add Expense</button>
