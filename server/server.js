@@ -102,12 +102,17 @@ function formatCategory(category) {
     return formattedCategory;
 }
 
+function formatAmount(amount) {
+    return parseFloat(parseFloat(amount).toFixed(2));
+}
+
 app.post('/api/budgets', async (req, res) => {
     const { userId, category, amount } = req.body;
     if (!category.trim() || amount == null || amount <= 0) {
         return res.status(400).json({ error: "Category must not be empty and amount must be greater than zero." });
     }
     const formattedCategory = formatCategory(category);
+    const formattedAmount = formatAmount(amount);
 
     try {
         const budgetsRef = collection(db, "users", userId, "budgets");
@@ -118,8 +123,8 @@ app.post('/api/budgets', async (req, res) => {
             return res.status(400).json({ error: "Budget category already exists." });
         }
 
-        const budgetRef = await addDoc(budgetsRef, { category: formattedCategory, amount });
-        res.status(201).json({ id: budgetRef.id, category: formattedCategory, amount });
+        const budgetRef = await addDoc(budgetsRef, { category: formattedCategory, amount: formattedAmount });
+        res.status(201).json({ id: budgetRef.id, category: formattedCategory, amount: formattedAmount });
     } catch (error) {
         console.error("Error creating budget: ", error);
         res.status(500).json({ error: "Error creating budget" });
@@ -149,10 +154,12 @@ app.put('/api/budgets/:userId/:budgetId', async (req, res) => {
         return res.status(400).json({ error: "Amount must be greater than zero." });
     }
 
+    const formattedAmount = formatAmount(amount); 
+
     try {
         const budgetRef = doc(db, "users", userId, "budgets", budgetId);
-        await updateDoc(budgetRef, { amount });
-        res.status(200).json({ message: `Budget updated successfully with ID: ${budgetId}`, amount });
+        await updateDoc(budgetRef, { amount: formattedAmount }); 
+        res.status(200).json({ message: `Budget updated successfully with ID: ${budgetId}`, amount: formattedAmount });
     } catch (error) {
         console.error("Error updating budget: ", error);
         res.status(500).json({ error: "Error updating budget" });
@@ -195,6 +202,7 @@ app.post('/api/expenses', async (req, res) => {
         return res.status(400).json({ error: "Category, amount, and date must not be empty, and amount must be greater than zero." });
     }
     const formattedCategory = formatCategory(category);
+    const formattedAmount = formatAmount(amount); 
 
     try {
         const budgetsRef = collection(db, "users", userId, "budgets");
@@ -206,8 +214,8 @@ app.post('/api/expenses', async (req, res) => {
         }
 
         const expensesRef = collection(db, "users", userId, "expenses");
-        const expenseRef = await addDoc(expensesRef, { category: formattedCategory, amount, date });
-        res.status(201).json({ id: expenseRef.id, category: formattedCategory, amount, date });
+        const expenseRef = await addDoc(expensesRef, { category: formattedCategory, amount: formattedAmount, date });
+        res.status(201).json({ id: expenseRef.id, category: formattedCategory, amount: formattedAmount, date });
     } catch (error) {
         console.error("Error logging expense: ", error);
         res.status(500).json({ error: "Error logging expense" });
@@ -237,11 +245,12 @@ app.put('/api/expenses/:userId/:expenseId', async (req, res) => {
         return res.status(400).json({ error: "Category, amount, and date must not be empty, and amount must be greater than zero." });
     }
     const formattedCategory = formatCategory(category);
+    const formattedAmount = formatAmount(amount); 
 
     try {
         const expenseRef = doc(db, "users", userId, "expenses", expenseId);
-        await updateDoc(expenseRef, { category: formattedCategory, amount, date });
-        res.status(200).json({ message: `Expense updated with ID: ${expenseId}`, category: formattedCategory, amount, date });
+        await updateDoc(expenseRef, { category: formattedCategory, amount: formattedAmount, date });
+        res.status(200).json({ message: `Expense updated with ID: ${expenseId}`, category: formattedCategory, amount: formattedAmount, date });
     } catch (error) {
         console.error("Error updating expense: ", error);
         res.status(500).json({ error: "Error updating expense" });
