@@ -79,6 +79,12 @@ function ExpenseTable({ expenses, setExpenses, budgets, fetchBudgetsAndExpenses,
             });
     };
 
+    const adjustDateForTimezone = (dateString) => {
+        const date = new Date(dateString);
+        const userTimezoneOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+        return new Date(date.getTime() + userTimezoneOffset);
+    };    
+
     return (
         <div>
             <h2>Expenses</h2>
@@ -129,7 +135,7 @@ function ExpenseTable({ expenses, setExpenses, budgets, fetchBudgetsAndExpenses,
                                         className="form-control"
                                     />
                                 ) : (
-                                    <span onClick={() => startEdit(expense)}>{new Date(expense.date).toLocaleDateString()}</span>
+                                    <span onClick={() => startEdit(expense)}>{adjustDateForTimezone(expense.date).toLocaleDateString()}</span>
                                 )}
                             </td>
                             <td className="col-3">
