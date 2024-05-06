@@ -102,7 +102,7 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
 
     return (
         <div>
-            <h2>Expenses</h2>
+            <h2>Expense History</h2>
             <table className="table table-bordered table-hover">
                 <thead>
                     <tr>

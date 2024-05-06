@@ -109,7 +109,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
 
     return (
         <div>
-            <h2>Budgets</h2>
+            <h2>Budget Table</h2>
             <table className="table table-bordered table-hover">
                 <thead>
                     <tr>

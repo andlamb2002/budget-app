@@ -58,7 +58,7 @@ function BudgetPie({ budgets }) {
 
     return (
         <div style={{ marginTop: '20px', marginBottom: '20px' }}> 
-            <h2>Budget Distribution</h2>
+            <h2>Budget Pie Chart</h2>
             <Pie data={data} options={options} />
         </div>
     );
