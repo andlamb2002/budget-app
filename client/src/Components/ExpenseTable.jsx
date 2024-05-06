@@ -81,7 +81,7 @@ function ExpenseTable({ expenses, setExpenses, budgets, fetchBudgetsAndExpenses,
 
     const adjustDateForTimezone = (dateString) => {
         const date = new Date(dateString);
-        const userTimezoneOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+        const userTimezoneOffset = date.getTimezoneOffset() * 60000; 
         return new Date(date.getTime() + userTimezoneOffset);
     };    
 

@@ -8,7 +8,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
     const [newBudget, setNewBudget] = useState({ id: '', category: '', amount: '' });
     const [editingBudgetId, setEditingBudgetId] = useState(null);
     const [editAmount, setEditAmount] = useState('');
-    const [showAddBudget, setShowAddBudget] = useState(false); // State to control the visibility of the add budget row
+    const [showAddBudget, setShowAddBudget] = useState(false); 
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
