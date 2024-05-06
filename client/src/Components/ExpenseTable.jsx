@@ -3,7 +3,7 @@ import { useAuth } from '../Contexts/authContext';
 import axios from 'axios';
 import API_URL from '../config';
 
-function ExpenseTable({ expenses, setExpenses, budgets, fetchBudgetsAndExpenses, setAlertMessage }) {
+function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMessage }) {
     const { user, refreshSession } = useAuth();
     const [newExpense, setNewExpense] = useState({ category: '', amount: '', date: new Date().toISOString().slice(0, 10) });
     const [editingExpenseId, setEditingExpenseId] = useState(null);
