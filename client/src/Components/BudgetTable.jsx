@@ -8,6 +8,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
     const [newBudget, setNewBudget] = useState({ id: '', category: '', amount: '' });
     const [editingBudgetId, setEditingBudgetId] = useState(null);
     const [editAmount, setEditAmount] = useState('');
+    const [showAddBudget, setShowAddBudget] = useState(false); // State to control the visibility of the add budget row
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -20,24 +21,30 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
         refreshSession();
     };
 
+    const toggleAddBudget = () => {
+        setShowAddBudget(!showAddBudget);
+        setNewBudget({ id: '', category: '', amount: '' }); 
+        refreshSession();
+    };
+
     const handleAddBudget = () => {
-        const url = newBudget.id ? `${API_URL}/api/budgets/${user.id}/${newBudget.id}` : `${API_URL}/api/budgets`;
-        const method = newBudget.id ? 'put' : 'post';
+        const url = `${API_URL}/api/budgets`;
+        const method = 'post';
         const data = { userId: user.id, category: newBudget.category, amount: parseFloat(newBudget.amount) || 0 };
         refreshSession();
-    
+
         axios({
             method: method,
             url: url,
             data: data
         })
         .then(() => {
-            setAlertMessage({ text: `${newBudget.id ? 'Updated' : 'Added'} budget successfully!`, type: 'success' });
-            setNewBudget({ id: '', category: '', amount: '' });
+            setAlertMessage({ text: 'Added budget successfully!', type: 'success' });
+            toggleAddBudget(); 
             fetchBudgetsAndExpenses();
         })
         .catch(error => {
-            setAlertMessage({ text: `Failed to ${newBudget.id ? 'update' : 'add'} budget.`, type: 'danger' });
+            setAlertMessage({ text: 'Failed to add budget.', type: 'danger' });
         });
     };
 
@@ -104,17 +111,17 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
             <table className="table table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th>Category</th>
-                        <th>Budget</th>
-                        <th>Expenses</th>
-                        <th>Actions</th>
+                        <th className="col-3">Category</th>
+                        <th className="col-3">Budget</th>
+                        <th className="col-3">Expenses</th>
+                        <th className="col-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {budgets.map(budget => (
                         <tr key={budget.id}>
-                            <td>{budget.category}</td>
-                            <td>
+                            <td className="col-3">{budget.category}</td>
+                            <td className="col-3">
                                 {editingBudgetId === budget.id ? (
                                     <input
                                         type="number"
@@ -122,6 +129,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
                                         onChange={handleAmountChange}
                                         onBlur={() => handleUpdateAmount(budget.id)}
                                         autoFocus
+                                        className="w-100"
                                     />
                                 ) : (
                                     <span onClick={() => startEdit(budget)}>
@@ -129,8 +137,8 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
                                     </span>
                                 )}
                             </td>
-                            <td>${calculateTotalExpenses(budget.category)}</td>
-                            <td>
+                            <td className="col-3">${calculateTotalExpenses(budget.category)}</td>
+                            <td className="col-3">
                                 <button onClick={() => handleDeleteBudget(budget.id)} className="btn btn-danger">Delete</button>
                             </td>
                         </tr>
@@ -145,11 +153,16 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
                     </tr>
                 </tfoot>
             </table>
-            <div>
-                <input type="text" name="category" placeholder="Category" value={newBudget.category} onChange={handleInputChange} />
-                <input type="number" name="amount" placeholder="Amount" value={parseFloat(newBudget.amount)} onChange={handleInputChange} />
-                <button onClick={handleAddBudget} className="btn btn-success">{newBudget.id ? 'Update' : 'Add'} Budget</button>
-            </div>
+            {showAddBudget ? (
+                <div>
+                    <input type="text" name="category" placeholder="Category" value={newBudget.category} onChange={handleInputChange} />
+                    <input type="number" name="amount" placeholder="Budget" value={parseFloat(newBudget.amount)} onChange={handleInputChange} />
+                    <button onClick={handleAddBudget} className="btn btn-success">Add</button>
+                    <button onClick={toggleAddBudget} className="btn btn-danger">Cancel</button>
+                </div>
+            ) : (
+                <button onClick={toggleAddBudget} className="btn btn-success btn-block">+ Add Budget</button>
+            )}
         </div>
     );
 }
