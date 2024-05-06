@@ -3,33 +3,29 @@ import { useAuth } from '../Contexts/authContext';
 import axios from 'axios';
 import API_URL from '../config';
 
-function BudgetTable({ budgets, setBudgets, fetchBudgetsAndExpenses, setAlertMessage }) {
+function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, setAlertMessage }) {
     const { user, refreshSession } = useAuth();
     const [newBudget, setNewBudget] = useState({ id: '', category: '', amount: '' });
+    const [editingBudgetId, setEditingBudgetId] = useState(null);
+    const [editAmount, setEditAmount] = useState('');
 
-    const handleInputChange = (event, setter) => {
-        setter(prev => ({ ...prev, [event.target.name]: event.target.value }));
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setNewBudget(prev => ({ ...prev, [name]: name === 'amount' ? parseFloat(value) || 0 : value }));
         refreshSession();
     };
 
-    const handleEditBudget = (budget) => {
-        setNewBudget(budget);
-        refreshSession();  
+    const handleAmountChange = (event) => {
+        setEditAmount(event.target.value);
+        refreshSession();
     };
 
-    const handleAddOrUpdateBudget = () => {
-        let url, method, data;
-        if (newBudget.id) {
-            url = `${API_URL}/api/budgets/${user.id}/${newBudget.id}`;
-            method = 'put';
-            data = { amount: newBudget.amount };
-        } else {
-            url = `${API_URL}/api/budgets`;
-            method = 'post';
-            data = { userId: user.id, category: newBudget.category, amount: newBudget.amount };
-        }
+    const handleAddBudget = () => {
+        const url = newBudget.id ? `${API_URL}/api/budgets/${user.id}/${newBudget.id}` : `${API_URL}/api/budgets`;
+        const method = newBudget.id ? 'put' : 'post';
+        const data = { userId: user.id, category: newBudget.category, amount: parseFloat(newBudget.amount) || 0 };
         refreshSession();
-
+    
         axios({
             method: method,
             url: url,
@@ -45,7 +41,38 @@ function BudgetTable({ budgets, setBudgets, fetchBudgetsAndExpenses, setAlertMes
         });
     };
 
+    const startEdit = (budget) => {
+        setEditingBudgetId(budget.id);
+        setEditAmount(budget.amount);
+        refreshSession();
+    };
+
+    const stopEdit = () => {
+        setEditingBudgetId(null);
+        refreshSession();
+    };
+
+    const handleUpdateAmount = (budgetId) => {
+        refreshSession();
+        if (editAmount !== '') {
+            const data = {
+                userId: user.id,
+                amount: parseFloat(editAmount) || 0
+            };
+            axios.put(`${API_URL}/api/budgets/${user.id}/${budgetId}`, data)
+                .then(() => {
+                    setAlertMessage({ text: 'Budget updated successfully!', type: 'success' });
+                    fetchBudgetsAndExpenses();
+                })
+                .catch(error => {
+                    setAlertMessage({ text: 'Failed to update budget.', type: 'danger' });
+                });
+            stopEdit();
+        }
+    };
+
     const handleDeleteBudget = (id) => {
+        refreshSession();
         if (window.confirm('Are you sure you want to delete this budget?')) {
             const newBudgets = budgets.filter(budget => budget.id !== id);
             setBudgets(newBudgets);
@@ -63,22 +90,65 @@ function BudgetTable({ budgets, setBudgets, fetchBudgetsAndExpenses, setAlertMes
         }
     };
 
+    const calculateTotalExpenses = (category) => {
+        return expenses
+            .filter(expense => expense.category === category)
+            .reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+    };
+
+    const totalExpenses = budgets.reduce((acc, budget) => acc + calculateTotalExpenses(budget.category), 0);
+
     return (
         <div>
             <h2>Budgets</h2>
-            <ul>
-                {budgets.map(budget => (
-                    <li key={budget.id}>
-                        {budget.category}: ${budget.amount}
-                        <button onClick={() => handleEditBudget(budget)} className="btn btn-info">Edit</button>
-                        <button onClick={() => handleDeleteBudget(budget.id)} className="btn btn-danger">Delete</button>
-                    </li>
-                ))}
-            </ul>
+            <table className="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Expenses</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {budgets.map(budget => (
+                        <tr key={budget.id}>
+                            <td>{budget.category}</td>
+                            <td>
+                                {editingBudgetId === budget.id ? (
+                                    <input
+                                        type="number"
+                                        value={editAmount}
+                                        onChange={handleAmountChange}
+                                        onBlur={() => handleUpdateAmount(budget.id)}
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <span onClick={() => startEdit(budget)}>
+                                        ${parseFloat(budget.amount)}
+                                    </span>
+                                )}
+                            </td>
+                            <td>${calculateTotalExpenses(budget.category)}</td>
+                            <td>
+                                <button onClick={() => handleDeleteBudget(budget.id)} className="btn btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Total:</strong></td>
+                        <td>${budgets.reduce((acc, budget) => acc + parseFloat(budget.amount), 0)}</td>
+                        <td>${totalExpenses}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
             <div>
-                <input type="text" name="category" placeholder="Category" value={newBudget.category} onChange={(e) => handleInputChange(e, setNewBudget)} />
-                <input type="number" name="amount" placeholder="Amount" value={newBudget.amount} onChange={(e) => handleInputChange(e, setNewBudget)} />
-                <button onClick={handleAddOrUpdateBudget} className="btn btn-success">{newBudget.id ? 'Update' : 'Add'} Budget</button>
+                <input type="text" name="category" placeholder="Category" value={newBudget.category} onChange={handleInputChange} />
+                <input type="number" name="amount" placeholder="Amount" value={parseFloat(newBudget.amount)} onChange={handleInputChange} />
+                <button onClick={handleAddBudget} className="btn btn-success">{newBudget.id ? 'Update' : 'Add'} Budget</button>
             </div>
         </div>
     );

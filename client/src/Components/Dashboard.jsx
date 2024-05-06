@@ -39,6 +39,7 @@ function Dashboard({ setAlertMessage }) {
             <BudgetTable 
                 budgets={budgets}
                 setBudgets={setBudgets}
+                expenses={expenses}
                 fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
                 setAlertMessage={setAlertMessage}
             />
