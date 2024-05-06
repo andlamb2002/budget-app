@@ -26,11 +26,17 @@ function Dashboard({ setAlertMessage }) {
     const fetchBudgetsAndExpenses = () => {
         if (user && user.id) {
             axios.get(`${API_URL}/api/budgets/${user.id}`)
-                .then(response => setBudgets(response.data))
+                .then(response => {
+                    const sortedBudgets = response.data.sort((a, b) => b.amount - a.amount);
+                    setBudgets(sortedBudgets);
+                })
                 .catch(error => setAlertMessage({ text: 'Failed to fetch budgets.', type: 'danger' }));
-
+    
             axios.get(`${API_URL}/api/expenses/${user.id}`)
-                .then(response => setExpenses(response.data))
+                .then(response => {
+                    const sortedExpenses = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    setExpenses(sortedExpenses);
+                })
                 .catch(error => setAlertMessage({ text: 'Failed to fetch expenses.', type: 'danger' }));
         }
     };
@@ -63,7 +69,9 @@ function Dashboard({ setAlertMessage }) {
             <div>
                 <div className="row mb-4">
                     <div className="col-md-6">
-                        <BudgetPie></BudgetPie>
+                        <BudgetPie 
+                        budgets={budgets} 
+                        />
                     </div>
                     <div className="col-md-6">
                         <ExpenseProgress></ExpenseProgress>
