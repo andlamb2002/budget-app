@@ -19,7 +19,8 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
     }
 
     const handleInputChange = (event, field) => {
-        setNewExpense(prev => ({ ...prev, [field]: event.target.value }));
+        const value = field === 'amount' ? parseFloat(event.target.value) || 0 : event.target.value;
+        setNewExpense(prev => ({ ...prev, [field]: value }));
         refreshSession();
     };
 
@@ -57,8 +58,11 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
 
     const handleSaveEdit = () => {
         const url = `${API_URL}/api/expenses/${user.id}/${editExpense.id}`;
-        refreshSession();
-        axios.put(url, { userId: user.id, ...editExpense })
+        const updatedExpense = {
+            ...editExpense,
+            amount: parseFloat(editExpense.amount).toFixed(2)  // Ensure this is a number only when saving
+        };
+        axios.put(url, { userId: user.id, ...updatedExpense })
             .then(() => {
                 setAlertMessage({ text: 'Updated expense successfully!', type: 'success' });
                 stopEdit();
@@ -129,12 +133,12 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                                 {editingExpenseId === expense.id ? (
                                     <input 
                                         type="number"
-                                        value={parseFloat(editExpense.amount)}
+                                        value={editExpense.amount ? parseFloat(editExpense.amount) : ''}
                                         onChange={(e) => handleInputChangeForEdit(e, 'amount')} 
                                         className="form-control"
                                     />
                                 ) : (
-                                    <span onClick={() => startEdit(expense)}>${parseFloat(expense.amount)}</span>
+                                    <span onClick={() => startEdit(expense)}>${parseFloat(expense.amount).toFixed(2)}</span>
                                 )}
                             </td>
                             <td className="col-3">
