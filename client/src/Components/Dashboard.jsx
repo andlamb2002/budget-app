@@ -70,11 +70,14 @@ function Dashboard({ setAlertMessage }) {
                 <div className="row mb-4">
                     <div className="col-md-6">
                         <BudgetPie 
-                        budgets={budgets} 
+                            budgets={budgets} 
                         />
                     </div>
                     <div className="col-md-6">
-                        <ExpenseProgress></ExpenseProgress>
+                        <ExpenseProgress
+                            budgets={budgets}
+                            expenses={expenses}
+                        />
                     </div>
                 </div>
             </div>
