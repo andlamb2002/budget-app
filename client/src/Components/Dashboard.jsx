@@ -36,20 +36,30 @@ function Dashboard({ setAlertMessage }) {
     return (
         <div>
             <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
-            <BudgetTable 
-                budgets={budgets}
-                setBudgets={setBudgets}
-                expenses={expenses}
-                fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
-                setAlertMessage={setAlertMessage}
-            />
-            <ExpenseTable
-                expenses={expenses}
-                setExpenses={setExpenses}
-                budgets={budgets}
-                fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
-                setAlertMessage={setAlertMessage}
-            />
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <div style={{ flex: 1, marginRight: '10px' }}>
+                    <BudgetTable 
+                        budgets={budgets}
+                        setBudgets={setBudgets}
+                        expenses={expenses}
+                        fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
+                        setAlertMessage={setAlertMessage}
+                    />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <ExpenseTable
+                        expenses={expenses}
+                        setExpenses={setExpenses}
+                        budgets={budgets}
+                        fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
+                        setAlertMessage={setAlertMessage}
+                    />
+                </div>
+            </div>
+            {/* Placeholder for future data visualizations */}
+            <div>
+                {/* Data visualization components will go here */}
+            </div>
         </div>
     );
 }

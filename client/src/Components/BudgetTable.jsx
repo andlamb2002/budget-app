@@ -129,7 +129,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
                                         onChange={handleAmountChange}
                                         onBlur={() => handleUpdateAmount(budget.id)}
                                         autoFocus
-                                        className="w-100"
+                                        className="form-control"
                                     />
                                 ) : (
                                     <span onClick={() => startEdit(budget)}>

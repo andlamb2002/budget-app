@@ -140,10 +140,14 @@ function ExpenseTable({ expenses, setExpenses, budgets, fetchBudgetsAndExpenses,
                             </td>
                             <td className="col-3">
                                 {editingExpenseId === expense.id ? (
-                                    <>
-                                        <button onClick={handleSaveEdit} className="btn btn-success">Save</button>
-                                        <button onClick={stopEdit} className="btn btn-danger">Cancel</button>
-                                    </>
+                                    <div>
+                                        <div className="mb-2">
+                                            <button onClick={handleSaveEdit} className="btn btn-success">Save</button>
+                                        </div>
+                                        <div>
+                                            <button onClick={stopEdit} className="btn btn-danger">Cancel</button>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <button onClick={() => handleDeleteExpense(expense.id)} className="btn btn-danger">Delete</button>
                                 )}
@@ -153,25 +157,17 @@ function ExpenseTable({ expenses, setExpenses, budgets, fetchBudgetsAndExpenses,
                 </tbody>
             </table>
             {showAddExpense ? (
-                <div className="mt-2 row">
-                    <div className="col">
-                        <select name="category" value={newExpense.category} onChange={(e) => handleInputChange(e, 'category')} className="form-control">
-                            <option value="">Category</option>
-                            {budgets.map(budget => (
-                                <option key={budget.id} value={budget.category}>{budget.category}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="col">
-                        <input type="number" name="amount" placeholder="Amount" value={newExpense.amount} onChange={(e) => handleInputChange(e, 'amount')} className="form-control" />
-                    </div>
-                    <div className="col">
-                        <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="form-control" />
-                    </div>
-                    <div className="col-auto">
-                        <button onClick={handleAddExpense} className="btn btn-success">Add Expense</button>
-                        <button onClick={toggleAddExpense} className="btn btn-danger">Cancel</button>
-                    </div>
+                <div>
+                    <select name="category" value={newExpense.category} onChange={(e) => handleInputChange(e, 'category')} className="me-2">
+                        <option value="">Category</option>
+                        {budgets.map(budget => (
+                            <option key={budget.id} value={budget.category}>{budget.category}</option>
+                        ))}
+                    </select>
+                    <input type="number" name="amount" placeholder="Amount" value={newExpense.amount} onChange={(e) => handleInputChange(e, 'amount')} className="me-2" />
+                    <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="me-2" />
+                    <button onClick={handleAddExpense} className="btn btn-success me-2">Add Expense</button>
+                    <button onClick={toggleAddExpense} className="btn btn-danger">Cancel</button>
                 </div>
             ) : (
                 <button onClick={toggleAddExpense} className="btn btn-success">+ Add Expense</button>
