@@ -7,6 +7,7 @@ import BudgetTable from './BudgetTable';
 import ExpenseTable from './ExpenseTable';
 import BudgetPie from './BudgetPie';
 import ExpenseProgress from './ExpenseProgress';
+import TotalProgress from './TotalProgress';
 
 function Dashboard({ setAlertMessage }) {
     const { user, refreshSession } = useAuth();
@@ -43,8 +44,12 @@ function Dashboard({ setAlertMessage }) {
 
     return (
         <div>
+            <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
+            <TotalProgress
+                budgets={budgets}
+                expenses={expenses}
+            />
             <div>
-                <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
                 <div className="row mb-4">
                     <div className="col-md-6">
                         <BudgetTable 
