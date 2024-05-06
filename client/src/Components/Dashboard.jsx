@@ -5,6 +5,8 @@ import axios from 'axios';
 import API_URL from '../config';
 import BudgetTable from './BudgetTable';
 import ExpenseTable from './ExpenseTable';
+import BudgetPie from './BudgetPie';
+import ExpenseProgress from './ExpenseProgress';
 
 function Dashboard({ setAlertMessage }) {
     const { user, refreshSession } = useAuth();
@@ -35,32 +37,41 @@ function Dashboard({ setAlertMessage }) {
 
     return (
         <div>
-            <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <div style={{ flex: 1, marginRight: '10px' }}>
-                    <BudgetTable 
-                        budgets={budgets}
-                        setBudgets={setBudgets}
-                        expenses={expenses}
-                        fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
-                        setAlertMessage={setAlertMessage}
-                    />
-                </div>
-                <div style={{ flex: 1 }}>
-                    <ExpenseTable
-                        expenses={expenses}
-                        setExpenses={setExpenses}
-                        budgets={budgets}
-                        fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
-                        setAlertMessage={setAlertMessage}
-                    />
+            <div>
+                <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
+                <div className="row mb-4">
+                    <div className="col-md-6">
+                        <BudgetTable 
+                            budgets={budgets}
+                            setBudgets={setBudgets}
+                            expenses={expenses}
+                            fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
+                            setAlertMessage={setAlertMessage}
+                        />
+                    </div>
+                    <div className="col-md-6">
+                        <ExpenseTable
+                            expenses={expenses}
+                            setExpenses={setExpenses}
+                            budgets={budgets}
+                            fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
+                            setAlertMessage={setAlertMessage}
+                        />
+                    </div>
                 </div>
             </div>
-            {/* Placeholder for future data visualizations */}
             <div>
-                {/* Data visualization components will go here */}
+                <div className="row mb-4">
+                    <div className="col-md-6">
+                        <BudgetPie></BudgetPie>
+                    </div>
+                    <div className="col-md-6">
+                        <ExpenseProgress></ExpenseProgress>
+                    </div>
+                </div>
             </div>
         </div>
+        
     );
 }
 
