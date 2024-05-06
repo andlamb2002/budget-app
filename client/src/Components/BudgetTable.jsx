@@ -127,7 +127,7 @@ function BudgetTable({ budgets, setBudgets, expenses, fetchBudgetsAndExpenses, s
                             {editingBudgetId === budget.id ? (
                                 <input
                                     type="number"
-                                    value={parseFloat(editAmount)}
+                                    value={parseFloat(editAmount)} 
                                     onChange={handleAmountChange}
                                     className="form-control"
                                     autoFocus

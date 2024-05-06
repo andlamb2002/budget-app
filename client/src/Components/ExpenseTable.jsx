@@ -118,7 +118,7 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                                 {editingExpenseId === expense.id ? (
                                     <input 
                                         type="number"
-                                        value={editExpense.amount} 
+                                        value={parseFloat(editExpense.amount)}
                                         onChange={(e) => handleInputChangeForEdit(e, 'amount')} 
                                         className="form-control"
                                     />
@@ -167,7 +167,7 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                                         <option key={budget.id} value={budget.category}>{budget.category}</option>
                                     ))}
                                 </select>
-                                <input type="number" name="amount" placeholder="Amount" value={newExpense.amount} onChange={(e) => handleInputChange(e, 'amount')} className="me-2" />
+                                <input type="number" name="amount" placeholder="Amount" value={parseFloat(newExpense.amount)} onChange={(e) => handleInputChange(e, 'amount')} className="me-2" />
                                 <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="me-2" />
                             </div>
                             <div className="my-2">
