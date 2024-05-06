@@ -10,26 +10,23 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend, PieController);
 
+function generateColor(index) {
+    var r = (index * 33 + 254) % 255;
+    var g = (index * 100 + 10) % 255;
+    var b = (index * 167 + 10) % 255;
+    return `rgba(${r}, ${g}, ${b}, 0.8)`;
+}
+
 function BudgetPie({ budgets }) {
+    const colors = budgets.map((_, index) => generateColor(index));
     const data = {
         labels: budgets.map(budget => budget.category),
         datasets: [{
             label: 'Budget Distribution',
             data: budgets.map(budget => budget.amount),
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)',
-                'rgba(199, 199, 199, 0.8)',
-                'rgba(83, 102, 255, 0.8)',
-                'rgba(40, 159, 64, 0.8)',
-                'rgba(255, 99, 132, 0.8)'
-            ],
-            borderColor: 'rgba(0, 0, 0, 1)', 
-            borderWidth: 1 
+            backgroundColor: colors,
+            borderColor: 'rgba(0, 0, 0, 1)',
+            borderWidth: 1
         }]
     };
 
@@ -41,19 +38,19 @@ function BudgetPie({ budgets }) {
                 labels: {
                     color: 'black',
                     font: {
-                        size: 14 
+                        size: 14
                     }
                 }
             },
         },
         layout: {
-            padding: 20 
+            padding: 20
         }
     };
 
     return (
         <div style={{ marginTop: '20px', marginBottom: '20px' }}> 
-            <h1>Budget Distribution</h1>
+            <h2>Budget Distribution</h2>
             <Pie data={data} options={options} />
         </div>
     );
