@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }) => {
     }, [logout]);
 
     const refreshSession = () => {
+        console.log("ref");
         setJustLoggedIn(false);
         clearTimeout(timeoutRef.current);
         setSessionWarningActive(false);
