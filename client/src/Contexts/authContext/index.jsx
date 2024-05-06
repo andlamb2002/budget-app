@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [sessionWarningActive, setSessionWarningActive] = useState(false);
     const [message, setMessage] = useState({ text: '', type: 'info' });
     const timeoutRef = useRef(null);
-    const expirationRef = useRef(Date.now() + 60000); //Change back to 60000
+    const expirationRef = useRef(Date.now() + 60000);
 
     const logout = useCallback(() => {
         setUser(null);
