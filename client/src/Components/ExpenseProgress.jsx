@@ -2,6 +2,14 @@ import React from 'react';
 import { ProgressBar } from 'react-bootstrap';
 
 function ExpenseProgress({ budgets, expenses }) {
+    if (budgets.length === 0) {
+        return (
+            <div style={{ fontSize: '1.2rem', marginTop: '20px' }}>
+                <p>Please add a budget to track your Expense Progress.</p>
+            </div>
+        );
+    }
+
     const getExpenseTotal = (category) => {
         return expenses
             .filter(expense => expense.category === category)

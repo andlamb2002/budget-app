@@ -18,6 +18,14 @@ function generateColor(index) {
 }
 
 function BudgetPie({ budgets }) {
+    if (budgets.length === 0) {
+        return (
+            <div style={{ fontSize: '1.2rem', marginTop: '20px' }}>
+                <p>Please add a budget to track your Budget Pie Chart.</p>
+            </div>
+        );
+    }
+
     const colors = budgets.map((_, index) => generateColor(index));
     const data = {
         labels: budgets.map(budget => budget.category),

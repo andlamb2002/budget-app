@@ -10,6 +10,14 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
     const [editExpense, setEditExpense] = useState({ category: '', amount: '', date: new Date().toISOString().slice(0, 10) });
     const [showAddExpense, setShowAddExpense] = useState(false); 
 
+    if (budgets.length === 0) {
+        return (
+            <div style={{ fontSize: '1.2rem', marginTop: '20px' }}>
+                <p>Please add a budget to track your Expenses.</p>
+            </div>
+        );
+    }
+
     const handleInputChange = (event, field) => {
         setNewExpense(prev => ({ ...prev, [field]: event.target.value }));
         refreshSession();
