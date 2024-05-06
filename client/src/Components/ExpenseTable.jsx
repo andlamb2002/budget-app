@@ -69,14 +69,17 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
 
     const handleDeleteExpense = (id) => {
         refreshSession();
-        axios.delete(`${API_URL}/api/expenses/${user.id}/${id}`)
-            .then(() => {
-                setAlertMessage({ text: 'Expense deleted successfully!', type: 'success' });
-                fetchBudgetsAndExpenses();
-            })
-            .catch(error => {
-                setAlertMessage({ text: 'Failed to delete expense.', type: 'danger' });
-            });
+        if (window.confirm('Are you sure you want to delete this expense?')) {
+            refreshSession();
+            axios.delete(`${API_URL}/api/expenses/${user.id}/${id}`)
+                .then(() => {
+                    setAlertMessage({ text: 'Expense deleted successfully!', type: 'success' });
+                    fetchBudgetsAndExpenses(); 
+                })
+                .catch(error => {
+                    setAlertMessage({ text: 'Failed to delete expense.', type: 'danger' });
+                });
+        }
     };
 
     const adjustDateForTimezone = (dateString) => {
