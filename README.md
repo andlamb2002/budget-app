@@ -1,5 +1,5 @@
-## Budget App
-# By: Andreas Lambropoulos
+# Budget App
+## By: Andreas Lambropoulos
 
 ## Tech Stack
 - **Frontend**: React, Bootstrap
