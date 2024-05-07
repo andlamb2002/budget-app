@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../server');  // Update this path if needed
+const app = require('../server');  
 
 describe('POST /api/login', () => {
     it('should login successfully and return user data', async () => {
@@ -15,5 +15,17 @@ describe('POST /api/login', () => {
         expect(response.body).toHaveProperty('firstName');
         expect(response.body).toHaveProperty('lastName');
         expect(response.body).toHaveProperty('email');
+    });
+
+    it('should fail to login with wrong password and return appropriate status code', async () => {
+        const response = await request(app)
+            .post('/api/login')
+            .send({
+                email: 'asdf@gmail.com',
+                password: 'wrongpassword'
+            });
+
+        expect(response.body).toHaveProperty('error');
+        expect(response.body.error).toBe('Authentication error: Firebase: Error (auth/invalid-credential).'); 
     });
 });

@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
+    "test:openHandles": "jest --detectOpenHandles",
     "start": "nodemon server.js"
   },
   "keywords": [],
