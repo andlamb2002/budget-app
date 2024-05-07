@@ -100,6 +100,15 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
         return new Date(date.getTime() + userTimezoneOffset);
     };    
 
+    const getFirstAndLastDayOfMonth = () => {
+        const date = new Date();
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().slice(0, 10);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().slice(0, 10);
+        return { firstDay, lastDay };
+    };
+    
+    const { firstDay, lastDay } = getFirstAndLastDayOfMonth();
+
     return (
         <div>
             <h2>Expense History</h2>
@@ -148,6 +157,8 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                                         value={editExpense.date}
                                         onChange={(e) => handleInputChangeForEdit(e, 'date')} 
                                         className="form-control"
+                                        min={firstDay}
+                                        max={lastDay}
                                     />
                                 ) : (
                                     <span onClick={() => startEdit(expense)}>{adjustDateForTimezone(expense.date).toLocaleDateString()}</span>
@@ -183,8 +194,16 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                                     ))}
                                 </select>
                                 <input type="number" name="amount" placeholder="Amount" value={parseFloat(newExpense.amount)} onChange={(e) => handleInputChange(e, 'amount')} className="me-2" />
-                                <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="me-2" />
-                            </div>
+                                <input
+                                    type="date"
+                                    name="date"
+                                    value={newExpense.date}
+                                    onChange={(e) => handleInputChange(e, 'date')}
+                                    className="me-2"
+                                    min={firstDay}
+                                    max={lastDay}
+                                />                            
+                                </div>
                             <div className="my-2">
                                 <button onClick={handleAddExpense} className="btn btn-success me-2">Add</button>
                                 <button onClick={toggleAddExpense} className="btn btn-danger">Cancel</button>
