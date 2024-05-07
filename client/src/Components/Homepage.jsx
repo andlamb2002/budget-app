@@ -61,7 +61,7 @@ function Homepage({ setAlertMessage }) {
                 />
             )}
             <section className="mt-3">
-                <p className="fs-4">Please go to the Dashboard to add budgets and track your expenses.</p>
+                <p className="fs-4">Go to your Dashboard to add monthly budgets and expenses.</p>
                 <div
                     className="border border-dark rounded p-3 d-inline-block"
                     style={{ cursor: 'pointer' }}
