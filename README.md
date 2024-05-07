@@ -17,8 +17,8 @@
 - **Login/Logout/Signup**: Users can authenticate and create accounts.
 - **Budget Management**: Add, edit, and delete budgets.
 - **Expense Management**: Add, edit, and delete expenses.
-- **Accessibility Features**: Keyboard navigation, error messages, ARIA labels, and semantic tags.
-- **Token Expiry**: Authentication tokens expire in 1 minute and return the user to the home page.
+- **Accessibility Features**: Keyboard navigation (tab), error messages, ARIA labels, and semantic tags.
+- **Token Expiry**: Authentication tokens expire in 1 minute and returns the user to the homepage.
 - **Auth Warning**: Warns users when authentication token is going to expire in 20 minuntes with a refresh button.
 
 ## Data Visualizations
@@ -27,7 +27,7 @@
 - **Budget/Expense Comparison**: Progress bars comparing budget and expense amounts.
 
 ## Testing
-- **Unit Test**: Jest unit test for backend functionality.
+- **Unit Test**: Jest unit test for backend login functionality.
 - **E2E Test**: Cypress Applitools for end-to-end testing.
 - **Visual Regression Test**: Ensuring the application's stability.
 
