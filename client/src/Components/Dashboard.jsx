@@ -43,13 +43,14 @@ function Dashboard({ setAlertMessage }) {
     };
 
     return (
-        <div>
+        <main>
             <h1>Dashboard of: {user?.firstName} {user?.lastName}</h1>
             <TotalProgress
                 budgets={budgets}
                 expenses={expenses}
+                aria-label="Overview of your financial progress"
             />
-            <div>
+            <section>
                 <div className="row mb-4">
                     <div className="col-md-6">
                         <BudgetTable 
@@ -58,6 +59,7 @@ function Dashboard({ setAlertMessage }) {
                             expenses={expenses}
                             fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
                             setAlertMessage={setAlertMessage}
+                            aria-label="Budget management table"
                         />
                     </div>
                     <div className="col-md-6">
@@ -67,27 +69,27 @@ function Dashboard({ setAlertMessage }) {
                             budgets={budgets}
                             fetchBudgetsAndExpenses={fetchBudgetsAndExpenses}
                             setAlertMessage={setAlertMessage}
+                            aria-label="Expense tracking table"
                         />
                     </div>
                 </div>
-            </div>
-            <div>
-                <div className="row mb-4">
-                    <div className="col-md-6">
-                        <BudgetPie 
-                            budgets={budgets} 
-                        />
-                    </div>
-                    <div className="col-md-6">
-                        <ExpenseProgress
-                            budgets={budgets}
-                            expenses={expenses}
-                        />
-                    </div>
+            </section>
+            <section className="row mb-4">
+                <div className="col-md-6">
+                    <BudgetPie 
+                        budgets={budgets} 
+                        aria-label="Budget distribution pie chart"
+                    />
                 </div>
-            </div>
-        </div>
-        
+                <div className="col-md-6">
+                    <ExpenseProgress
+                        budgets={budgets}
+                        expenses={expenses}
+                        aria-label="Expense progression chart"
+                    />
+                </div>
+            </section>
+        </main>
     );
 }
 

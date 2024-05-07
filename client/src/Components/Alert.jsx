@@ -19,15 +19,17 @@ function Alert({ propMessage }) {
     }, [propMessage, contextMessage]);
 
     return (
-        <div className="container mt-3" style={{ minHeight: '50px' }}>
+        <div className="container mt-3" aria-live="polite" style={{ minHeight: '50px' }}>
             {sessionWarningActive ? (
-                <div className="alert alert-warning">
+                <div className="alert alert-warning" role="alert">
                     Your session will expire soon.{" "}
                     <button onClick={refreshSession} className="btn btn-sm btn-primary">Refresh Session</button>
                 </div>
             ) : (
                 displayMessage.text && (
-                    <div className={`alert alert-${displayMessage.type}`}>{displayMessage.text}</div>
+                    <div className={`alert alert-${displayMessage.type}`} role="alert">
+                        {displayMessage.text}
+                    </div>
                 )
             )}
             {!sessionWarningActive && !displayMessage.text && (

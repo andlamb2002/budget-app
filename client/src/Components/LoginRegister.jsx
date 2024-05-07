@@ -61,6 +61,7 @@ function LoginRegister({ setAlertMessage }) {
                 <h2>Login</h2>
                 <input
                     type="email"
+                    aria-label="Email for login"
                     value={loginInfo.email}
                     onChange={e => setLoginInfo({ ...loginInfo, email: e.target.value })}
                     className="form-control"
@@ -68,6 +69,7 @@ function LoginRegister({ setAlertMessage }) {
                 />
                 <input
                     type="password"
+                    aria-label="Password for login"
                     value={loginInfo.password}
                     onChange={e => setLoginInfo({ ...loginInfo, password: e.target.value })}
                     className="form-control mt-2"
@@ -79,6 +81,7 @@ function LoginRegister({ setAlertMessage }) {
                 <h2>Register</h2>
                 <input
                     type="text"
+                    aria-label="First name for registration"
                     value={registerInfo.firstName}
                     onChange={e => setRegisterInfo({ ...registerInfo, firstName: e.target.value })}
                     className="form-control"
@@ -86,6 +89,7 @@ function LoginRegister({ setAlertMessage }) {
                 />
                 <input
                     type="text"
+                    aria-label="Last name for registration"
                     value={registerInfo.lastName}
                     onChange={e => setRegisterInfo({ ...registerInfo, lastName: e.target.value })}
                     className="form-control mt-2"
@@ -93,6 +97,7 @@ function LoginRegister({ setAlertMessage }) {
                 />
                 <input
                     type="email"
+                    aria-label="Email for registration"
                     value={registerInfo.email}
                     onChange={e => setRegisterInfo({ ...registerInfo, email: e.target.value })}
                     className="form-control mt-2"
@@ -100,6 +105,7 @@ function LoginRegister({ setAlertMessage }) {
                 />
                 <input
                     type="password"
+                    aria-label="Password for registration"
                     value={registerInfo.password}
                     onChange={e => setRegisterInfo({ ...registerInfo, password: e.target.value })}
                     className="form-control mt-2"
@@ -107,6 +113,7 @@ function LoginRegister({ setAlertMessage }) {
                 />
                 <input
                     type="password"
+                    aria-label="Confirm password for registration"
                     value={registerInfo.confirmPassword}
                     onChange={e => setRegisterInfo({ ...registerInfo, confirmPassword: e.target.value })}
                     className="form-control mt-2"
@@ -116,6 +123,8 @@ function LoginRegister({ setAlertMessage }) {
             </div>
         </div>
     );
+    
+    
 }
 
 export default LoginRegister;

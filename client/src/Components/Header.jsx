@@ -26,18 +26,18 @@ function Header() {
     };
 
     return (
-        <header className="container-fluid bg-success py-4"> 
+        <header className="container-fluid bg-success py-4">
             <div className="container">
-                <div className="d-flex justify-content-between align-items-center">
-                    <h1>{getPageTitle()}</h1>
+                <nav className="d-flex justify-content-between align-items-center">
+                    <h1>{getPageTitle(pathname)}</h1>
                     {user && (
                         <div>
-                            <Link to="/" className="btn btn-primary m-2">Home</Link>
-                            <Link to="/dashboard" className="btn btn-primary m-2">Dashboard</Link>
-                            <button onClick={handleLogout} className="btn btn-danger m-2">Logout</button>
+                            <Link to="/" className="btn btn-primary m-2" aria-label="Home">Home</Link>
+                            <Link to="/dashboard" className="btn btn-primary m-2" aria-label="Dashboard">Dashboard</Link>
+                            <button onClick={handleLogout} className="btn btn-danger m-2" aria-label="Logout">Logout</button>
                         </div>
                     )}
-                </div>
+                </nav>
             </div>
         </header>
     );

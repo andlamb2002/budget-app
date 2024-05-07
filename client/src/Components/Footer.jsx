@@ -7,7 +7,7 @@ function Footer() {
                 © 2024 Budget App by Andreas Lambropoulos | Email: <a href="mailto:alambro1@uncc.edu">alambro1@uncc.edu</a>
             </div>
         </footer>
-    );
+    );    
 }
 
 export default Footer;

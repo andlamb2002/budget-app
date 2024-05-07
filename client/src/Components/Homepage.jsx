@@ -51,23 +51,30 @@ function Homepage({ setAlertMessage }) {
     }, [user, justLoggedIn, navigate, setAlertMessage]);
 
     return (
-        <div className="text-center my-4">
+        <main className="text-center my-4">
             <h1>Hello, {user?.firstName} {user?.lastName}!</h1>
             {budgets.length > 0 && (
                 <TotalProgress
                     budgets={budgets}
                     expenses={expenses}
+                    aria-label="Total progress for budgets and expenses"
                 />
             )}
-            <div className="mt-3">
+            <section className="mt-3">
                 <p className="fs-4">Please go to the Dashboard to add budgets and track your expenses.</p>
-                <div className="border border-dark rounded p-3 d-inline-block" style={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
+                <div
+                    className="border border-dark rounded p-3 d-inline-block"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigate('/dashboard')}
+                    role="button"
+                    aria-label="Go to Dashboard"
+                >
                     <i className="bi bi-layout-text-sidebar-reverse" style={{ fontSize: '100px' }}></i>
                     <div className="fs-3 mt-2">Dashboard</div>
                 </div>
-            </div>
-        </div>
-    );
+            </section>
+        </main>
+    );    
 }
 
 export default Homepage;
