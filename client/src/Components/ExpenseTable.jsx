@@ -186,7 +186,7 @@ function ExpenseTable({ expenses, budgets, fetchBudgetsAndExpenses, setAlertMess
                                 <input type="date" name="date" placeholder="Date" value={newExpense.date} onChange={(e) => handleInputChange(e, 'date')} className="me-2" />
                             </div>
                             <div className="my-2">
-                                <button onClick={handleAddExpense} className="btn btn-success me-2">Add Expense</button>
+                                <button onClick={handleAddExpense} className="btn btn-success me-2">Add</button>
                                 <button onClick={toggleAddExpense} className="btn btn-danger">Cancel</button>
                             </div>
                         </div>
