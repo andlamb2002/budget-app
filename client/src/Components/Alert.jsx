@@ -22,8 +22,13 @@ function Alert({ propMessage }) {
         <div className="container mt-3" aria-live="polite" style={{ minHeight: '50px' }}>
             {sessionWarningActive ? (
                 <div className="alert alert-warning" role="alert">
-                    Your session will expire soon.{" "}
-                    <button onClick={refreshSession} className="btn btn-sm btn-primary">Refresh Session</button>
+                    Your session will expire soon, 
+                    <a href="#" onClick={(e) => {
+                        e.preventDefault(); 
+                        refreshSession();
+                    }} style={{ textDecoration: 'underline', paddingLeft: '5px' }}>
+                        refresh session.
+                    </a>
                 </div>
             ) : (
                 displayMessage.text && (
