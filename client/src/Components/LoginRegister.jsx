@@ -8,11 +8,11 @@ function LoginRegister({ setAlertMessage }) {
     const navigate = useNavigate();
     const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
     const [registerInfo, setRegisterInfo] = useState({
-        firstName: 'test', //Remove test inputs later
-        lastName: 'test',
-        email: 'test@gmail.com',
-        password: '123456',
-        confirmPassword: '123456'
+        firstName: '', 
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
     });
 
     const setAlertWithTimeout = useCallback((message) => {
